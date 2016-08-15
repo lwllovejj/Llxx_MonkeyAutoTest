@@ -1,2 +1,2 @@
 # Llxx_MonkeyAutoTest
-@by eachen  , fanxinghaoyue
+@by eachen  , fanxing

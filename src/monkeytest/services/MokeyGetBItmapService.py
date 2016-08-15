@@ -54,8 +54,10 @@ class MonkeyGetBitmapService(threading.Thread):
     
         # print (name)
         print "%s Phone has connect by adb ..." % (name)
-        self.path = 'D:\\screenshot\\'
+        self.path = 'E:\\screenshot\\'
         self.filename = 'monkeyPic'
+        if(os.path.exists(self.path) == False ):
+            os.makedirs(self.path)
         
     def hand_user_con(self, user):
         ## print "hand_user_con %s" % (user.username)
