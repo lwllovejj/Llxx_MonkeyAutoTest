@@ -13,6 +13,6 @@ class StartMonkeyService(threading.Thread):
         print ('StartMonkeyService...')
         cmd = 'monkeyrunner ' + os.getcwd()
         cmd = cmd + '\\services\\MokeyGetBItmapService.py'
-        print (cmd)
+        print ("run command : " + cmd)
         os.system(cmd)
         print ('be there')
