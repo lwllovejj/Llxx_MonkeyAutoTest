@@ -1,3 +1,4 @@
 eclipse.preferences.version=1
 encoding//src/monkeytest/monkeyrunner_demo.py=utf-8
 encoding//src/monkeytest/services/MokeyGetBItmapService.py=utf-8
+encoding//src/monkeytest/services/StartMonkeyService.py=utf-8
