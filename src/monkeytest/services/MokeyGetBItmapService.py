@@ -13,6 +13,7 @@ from com.android.monkeyrunner import MonkeyDevice as md
 from com.android.monkeyrunner import MonkeyImage as mi
 from __builtin__ import file
 
+# test by lwl
 # 用户对象
 class client:
     ## 创建一个用户，传入对方连接的套接字接口和用户名
