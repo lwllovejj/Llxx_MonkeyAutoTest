@@ -64,8 +64,13 @@ class MyPanel(wx.Panel):
                         h = img.GetHeight()
                         # img = img.Rescale(w/2,h/2)
                         img.Rescale(w / 2, h / 2)
-                        self.myImage.SetBitmap(img.ConvertToBitmap())
-                    
+                        
+                        # 非正常关闭的时候这里会报错
+                        try:
+                            self.myImage.SetBitmap(img.ConvertToBitmap())
+                        except:
+                            print 'self.myImage.SetBitmap set error'
+                            
                 else:
                     print msg[0]
 
