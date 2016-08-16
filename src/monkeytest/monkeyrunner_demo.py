@@ -18,7 +18,7 @@ class MyFrame(wx.Frame):
         def __init__(self):
             wx.Frame.__init__(self, None, -1, size=(1280, 720), title="自动测试工具".decode('utf-8', 'ignore'))  # "2016/7/27 星期三".decode('utf-8','ignore'))
             self.panel = MyPanel(self)
-            print u'commit by lvlv,a'
+            print u'hello github'
 class MyPanel(wx.Panel):
         
         global data
