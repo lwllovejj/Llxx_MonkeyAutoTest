@@ -34,8 +34,8 @@ class MyPanel(wx.Panel):
             # # 添加一张图片显示在x=30，y=50的位置
             self.myImage = wx.StaticBitmap(self, -1, pos=(10, 10), size=(240, 400))
             
-            monkeyServer = StartMonkeyService.StartMonkeyService()
-            monkeyServer.start()
+            # monkeyServer = StartMonkeyService.StartMonkeyService()
+            # monkeyServer.start()
             print "MonkeyService is start()"
             
             time.sleep(2)
@@ -92,8 +92,9 @@ class MyPanel(wx.Panel):
                 pass
 
         def onGetPic(self, event):
-            monkeyServer = StartMonkeyService.StartMonkeyService()
-            monkeyServer.start()
+            print "onGetPic click"
+            # monkeyServer = StartMonkeyService.StartMonkeyService()
+            # monkeyServer.start()
         
 class MyApp(wx.App):
         def OnPreInit(self, *args, **kwargs):
