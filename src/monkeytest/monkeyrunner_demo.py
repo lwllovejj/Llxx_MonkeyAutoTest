@@ -30,8 +30,12 @@ class MyPanel(wx.Panel):
             self.pic = wx.Button(self, -1, pos=(500, 100), size=(100, 50), label="11")
             self.pic.Bind(wx.EVT_BUTTON, self.onGetPic)
             
+            self.pc = wx.Button(self, -1, pos=(600, 100), size=(100, 50), label="get")
+            self.pc.Bind(wx.EVT_BUTTON, self.onWh)
+            
             # # 添加一张图片显示在x=30，y=50的位置
             self.myImage = wx.StaticBitmap(self, -1, pos=(10, 10), size=(240, 400))
+            
             
             # monkeyServer = StartMonkeyService.StartMonkeyService()
             # monkeyServer.start()
@@ -94,6 +98,8 @@ class MyPanel(wx.Panel):
                 isNormar = False
             finally:
                 pass
+        def onWh(self,event):
+            pass
 
         def onGetPic(self, event):
             print "onGetPic click"
