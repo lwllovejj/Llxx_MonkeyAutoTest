@@ -57,11 +57,11 @@ class MyPanel(wx.Panel):
             while(True):
                 data = skt.recv(1024)  # 阻塞线程，接受消息
 #                 msg = data.split('|')Physical size: 720x1280
-                msg = data.split(':')
+                msg = data.split('|')
 #                 if msg[0]=='':
 #                     print 
                 if msg[0]=="Physical size":
-                    print msg[1]
+                    print "width :" + msg[1] + "height" + msg[2]
                 if msg[0] == 'login':
                     print u'%s user has already logged in, start to chat' % msg[1]
                     other_usr = msg[1]
@@ -107,9 +107,10 @@ class MyPanel(wx.Panel):
             finally:
                 pass
         def onWh(self,event):
+            self.clien_socket.send("getwh");
 #             tag=1
-            t = threading.Thread(target=self.recieve_msg, args=('lvlv', self.clien_socket))
-            t.start()
+            #t = threading.Thread(target=self.recieve_msg, args=('lvlv', self.clien_socket))
+            #t.start()
         def onGetPic(self, event):
 #             tag=0
             print "onGetPic click"
