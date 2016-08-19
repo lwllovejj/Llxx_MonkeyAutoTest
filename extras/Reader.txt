@@ -1,0 +1,4 @@
+
+1.ImportError: No module named extern
+解压extern-0.1.0.tar.gz
+执行：python setup.py install 安装extern-0.1.0.tar.gz
