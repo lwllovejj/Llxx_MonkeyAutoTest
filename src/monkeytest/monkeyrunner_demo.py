@@ -20,12 +20,12 @@ class MyFrame(wx.Frame):
             print u'hello github  hhhhhhaaaa'
 class MyPanel(wx.Panel):
         
-        global data
+        global data,tag
         global clien_socket;
+        tag=0
         data = []
         def __init__(self, Parent):                      
             wx.Panel.__init__(self, Parent, -1)
-            
             print os.getcwd() 
             self.pic = wx.Button(self, -1, pos=(500, 100), size=(100, 50), label="11")
             self.pic.Bind(wx.EVT_BUTTON, self.onGetPic)
@@ -46,14 +46,22 @@ class MyPanel(wx.Panel):
             
         # # 处理接收消息
         def recieve_msg(self, username, skt):
-            print 'receive_msg'
+#             print 'receive_msg'
             global isNormar, other_usr
             
-            # # 发送用户登录信息，服务端会对应解析
+#             if tag==1:
+#                 skt.send('getWh/')
+#             else:
+                # # 发送用户登录信息，服务端会对应解析
             skt.send('login|%s' % username)
             while(True):
                 data = skt.recv(1024)  # 阻塞线程，接受消息
-                msg = data.split('|')
+#                 msg = data.split('|')Physical size: 720x1280
+                msg = data.split(':')
+#                 if msg[0]=='':
+#                     print 
+                if msg[0]=="Physical size":
+                    print msg[1]
                 if msg[0] == 'login':
                     print u'%s user has already logged in, start to chat' % msg[1]
                     other_usr = msg[1]
@@ -99,9 +107,11 @@ class MyPanel(wx.Panel):
             finally:
                 pass
         def onWh(self,event):
-            pass
-
+#             tag=1
+            t = threading.Thread(target=self.recieve_msg, args=('lvlv', self.clien_socket))
+            t.start()
         def onGetPic(self, event):
+#             tag=0
             print "onGetPic click"
             # monkeyServer = StartMonkeyService.StartMonkeyService()
             # monkeyServer.start()
