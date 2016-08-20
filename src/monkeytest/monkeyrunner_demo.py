@@ -95,7 +95,7 @@ class MyPanel(wx.Panel):
                 self.clien_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 
                 # 调用connect 连接本地(127.0.0.1) 的9999端口
-                self.clien_socket.connect(("127.0.0.1", 8082))
+                self.clien_socket.connect(("127.0.0.1", 9999))
                 
                 # 开始连接
                 t = threading.Thread(target=self.recieve_msg, args=(usrname, self.clien_socket))
