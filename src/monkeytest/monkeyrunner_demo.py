@@ -53,14 +53,14 @@ class MyPanel(wx.Panel):
 #                 skt.send('getWh/')
 #             else:
                 # # 发送用户登录信息，服务端会对应解析
-            skt.send('login|%s' % username)
+            skt.send('login|%s\r\n' % username)
             while(True):
                 data = skt.recv(1024)  # 阻塞线程，接受消息
 #                 msg = data.split('|')Physical size: 720x1280
                 msg = data.split('|')
 #                 if msg[0]=='':
 #                     print 
-                if msg[0]=="Physical size":
+                if msg[0]=="getwh":
                     print "width :" + msg[1] + "height" + msg[2]
                 if msg[0] == 'login':
                     print u'%s user has already logged in, start to chat' % msg[1]
@@ -95,7 +95,7 @@ class MyPanel(wx.Panel):
                 self.clien_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 
                 # 调用connect 连接本地(127.0.0.1) 的9999端口
-                self.clien_socket.connect(("127.0.0.1", 9999))
+                self.clien_socket.connect(("127.0.0.1", 8082))
                 
                 # 开始连接
                 t = threading.Thread(target=self.recieve_msg, args=(usrname, self.clien_socket))
@@ -107,7 +107,8 @@ class MyPanel(wx.Panel):
             finally:
                 pass
         def onWh(self,event):
-            self.clien_socket.send("getwh");
+            self.clien_socket.send('getwh\r\n');
+            print "getwh"
 #             tag=1
             #t = threading.Thread(target=self.recieve_msg, args=('lvlv', self.clien_socket))
             #t.start()
