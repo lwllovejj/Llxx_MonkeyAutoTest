@@ -51,7 +51,7 @@ class llxx_client:
     send message to Android Apk Service
     '''
     def sendToService(self, msg):
-        self.socket_listener.send(msg);
+        self.socket_listener.sendall(msg)
         
     '''
     send message to MonkeyRunner Service
