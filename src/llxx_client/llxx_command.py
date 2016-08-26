@@ -18,8 +18,8 @@ class command:
     '''
     get command
     '''
-    @abstractmethod
-    def getCommand(self):pass
+    def getCommand(self):
+        return json.dumps(self._command, sort_keys=True) + "}"
     
     @abstractmethod
     def getAction(self):pass
@@ -37,12 +37,8 @@ class ClickCommand(command):
     
         self.CLICK_TYPE_BY_ID_INDEX = 0x03
         self.CLICK_TYPE_BY_NAME_INDEX = 0x04
-    '''
-    get command
-    '''
-    def getCommand(self):
 
-        return json.dumps(self._command, sort_keys=True)
+        
     
     def getAction(self):
         return "preformClick"

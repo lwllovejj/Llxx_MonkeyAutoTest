@@ -51,7 +51,7 @@ if __name__ == '__main__':
     click = ClickCommand()
     click.performClickById("com.llxx.service:id/open_toast")
     print click.getCommand()
-    _llxx_client.sendToService('{"action": "preformClick", "clicktype": 1, "name": "com.llxx.service:id/open_toast"}}')
+    _llxx_client.sendToService(click.getCommand())
     while showtoast == False:
         print "------------"
         print showtoast
