@@ -2,13 +2,19 @@
 '''
 Created on 2016年8月26日
 
-@author: lwllovewf2010
+@author: fanxin, eachen
 '''
+import os
+import sys
+
+curPath = os.path.abspath(os.path.dirname(__file__))
+sys.path.append(curPath)
+
 from llxx_client import llxx_client
 from llxx_client import llxx_client_listner
 from llxx_command import ClickCommand
 from llxx_wait import llxx_wait
-import os
+
 
 showtoast = False;
 # pip install simplejson
@@ -69,7 +75,7 @@ class llxx_client_wrap(llxx_client_listner):
         self.socket_monkeyrunner.send(msg);
     
     def runCommand(self, command):
-        self.sendToService(click.getCommand())
+        self.sendToService(command.getCommand())
         
     def regMessageListner(self, listener):
         self.messageListeners.append(listener)
