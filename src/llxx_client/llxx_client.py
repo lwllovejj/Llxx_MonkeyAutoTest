@@ -20,7 +20,7 @@ class llxx_client_listner:
 
 
 class llxx_client:
-    def __init__(self, listenerApkService, listenerMonkeyRunnerService):
+    def __init__(self, listenerApkService , listenerMonkeyRunnerService):
         
         # 监听客户端的点击事件
         self.socket_listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -38,14 +38,14 @@ class llxx_client:
         while(True):
             data = self.socket_listener.recv(1024 * 20)  # 阻塞线程，接受消息
             #print "_listener receive->" + data
-            self.listener_apk_service.onMessage(data)
+            self.listener_apk_service(data)
         
     def _monkeyrunner(self):
         print "_monkeyrunner start"
         while(True):
             data = self.socket_monkeyrunner.recv(1024 * 20)  # 阻塞线程，接受消息
             #print "_listener receive->" + data
-            self.listener_monkeyrunner_service.onMessage(data)
+            self.listener_monkeyrunner_service(data)
             
     '''
     send message to Android Apk Service
