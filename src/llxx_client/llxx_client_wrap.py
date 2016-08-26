@@ -83,19 +83,33 @@ if __name__ == '__main__':
     client = llxx_client_wrap()
     print "------------"
     click = ClickCommand()
-    # click.performClickById("com.llxx.service:id/open_toast")
-    # click.performClickByName(u"启动第二页")
-    # waitActivity = llxx_wait("com.llxx.servic", client);
-    # client.runCommand(click)
-    # waitActivity.waitForActivity("")
     
+    #click.performClickById("com.llxx.service:id/open_toast")
+    
+    ## test perform click by text
+    click.performClickByName(u"启动第二页")
+    waitActivity = llxx_wait("com.llxx.servic", client);
+    client.runCommand(click)
+    isMatch = waitActivity.waitForActivity("com.llxx.socket.SecondActivity")
+    
+    if isMatch:
+        print "waitForActivity com.llxx.socket.SecondActivity ok"
+    
+    click.performClickByName(u"关闭页面")
+    waitActivity = llxx_wait("com.llxx.service", client);
+    client.runCommand(click)
+    isMatch = waitActivity.waitForActivity("com.llxx.socket.MainActivity")
+    if isMatch:
+        print "waitForActivity com.llxx.socket.MainActivity ok"
+    
+    ##　test perform click text
     click.performClickByName(u"Show_Toast")
-    
-    waitToast = llxx_wait("com.llxx.servic", client);
+    waitToast = llxx_wait("com.llxx.service", client);
     client.runCommand(click)
     isMatch = waitToast.waitForNotifyToast(u"show toast")
     if isMatch:
         print "waitForNotifyToast ok"
-        exit(0)
+        
+    exit(0)
     
         
