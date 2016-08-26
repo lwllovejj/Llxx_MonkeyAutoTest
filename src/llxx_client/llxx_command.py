@@ -50,6 +50,13 @@ class ClickCommand(command):
         self._command['clicktype'] = self.CLICK_TYPE_BY_ID
         self._command['name'] = idName
         
+    '''
+    click by name
+    '''
+    def performClickByName(self, name):
+        self._command['clicktype'] = self.CLICK_TYPE_BY_NAME
+        self._command['name'] = name
+    
 if __name__ == '__main__':
     click = ClickCommand()
     click.performClickById("com.llxx.service:id/open_toast")

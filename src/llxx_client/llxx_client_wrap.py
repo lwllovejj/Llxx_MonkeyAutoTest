@@ -49,7 +49,8 @@ if __name__ == '__main__':
    
     print "------------"
     click = ClickCommand()
-    click.performClickById("com.llxx.service:id/open_toast")
+    #click.performClickById("com.llxx.service:id/open_toast")
+    click.performClickByName(u"启动第二页")
     print click.getCommand()
     _llxx_client.sendToService(click.getCommand())
     while showtoast == False:
