@@ -19,26 +19,28 @@ click = ClickCommand()
 
 package = "com.netease.newsreader.activity"
 
-# os.system("adb shell am force-stop com.netease.newsreader.activity")
-# os.system("adb shell am start com.netease.newsreader.activity/com.netease.nr.biz.ad.AdActivity")
-# 
-# # com.netease.newsreader.activity/com.netease.nr.phone.main.MainActivity
-# waitActivity = llxx_wait("com.netease.newsreader.activity", client);
-# isMatch = waitActivity.waitForActivity("com.netease.nr.phone.main.MainActivity")
-# if isMatch:
-#     print "waitForActivity com.netease.nr.phone.main.MainActivity ok"
+os.system("adb shell am force-stop com.netease.newsreader.activity")
+os.system("adb shell am start com.netease.newsreader.activity/com.netease.nr.biz.ad.AdActivity")
+ 
+# com.netease.newsreader.activity/com.netease.nr.phone.main.MainActivity
+waitActivity = llxx_wait("com.netease.newsreader.activity", client);
+isMatch = waitActivity.waitForActivity("com.netease.nr.phone.main.MainActivity")
+if isMatch:
+    print "waitForActivity com.netease.nr.phone.main.MainActivity ok"
 
 
 queryNome = QueryCommand()
 queryNome.queryNone()
+queryNome.queryListView()
 client.runCommand(queryNome)
 print queryNome.getCommand()
+
 ##　test perform click text
-# click.performClickByName(u"直播")
-# waitToast = llxx_wait("com.llxx.service", client);
-# client.runCommand(click)
-# isMatch = waitToast.waitForNotifyToast(u"show toast")
-# if isMatch:
-#     print "waitForNotifyToast ok"
+click.performClickByName(u"军事")
+waitForClick = llxx_wait(u"com.llxx.service", client);
+client.runCommand(click)
+isMatch = waitForClick.waitForClick(u"android.widget.TextView", u"军事")
+if isMatch:
+    print "waitForClick ok"
 #     
-# exit(0)
+exit(0)

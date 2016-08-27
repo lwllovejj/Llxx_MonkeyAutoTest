@@ -66,6 +66,7 @@ class QueryCommand(command):
     def __init__(self):
         command.__init__(self)
         self.QUERY_TYPE_BY_NONE = 0x00
+        self.QUERY_TYPE_BY_LISTVIEW = 0x01
 
         
     
@@ -77,6 +78,14 @@ class QueryCommand(command):
     '''
     def queryNone(self):
         self._command['type'] = self.QUERY_TYPE_BY_NONE
+        
+    '''
+    query listview
+    '''
+    def queryListView(self):
+        self._command['type'] = self.QUERY_TYPE_BY_LISTVIEW
+        
+    
 
 if __name__ == '__main__':
     click = ClickCommand()

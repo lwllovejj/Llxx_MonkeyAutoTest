@@ -15,7 +15,8 @@ class llxx_wait:
         self._llxx_client_wrap = llxx_client_wrap
     
     def onMessage(self, message):
-        self.messageList.append(message)
+        if message.strip() != "":
+            self.messageList.append(message)
         # print "llxx_wait onMessage ->" + message
     
     def waitForActivity(self, activityName):
@@ -51,12 +52,29 @@ class llxx_wait:
         while True and (isBreak == False):
             #print self.messageList
             for msg in self.messageList:
+                    target = json.JSONDecoder().decode(msg)
+                    if target['action'] == "notify" and target['classname'] == classname and target['title'] == title:
+                        isMatch = True
+                        isBreak = True
+                        self.messageList.remove(msg)
+                        break;
+        self._llxx_client_wrap.unRegMessageListener(self)
+        
+        return isMatch
+
+    def waitForClick(self, classname , title):
+        self._llxx_client_wrap.regMessageListner(self)
+        isMatch = False
+        isBreak = False
+        while True and (isBreak == False):
+            #print self.messageList
+            for msg in self.messageList:
                 target = json.JSONDecoder().decode(msg)
-                if target['action'] == "notify" and target['classname'] == classname and target['title'] == title:
-                    isMatch = True;
+                if target['action'] == "click" and target['classname'] == classname and target['title'] == title:
+                    isMatch = True
                     isBreak = True
                     self.messageList.remove(msg)
                     break;
+                
         self._llxx_client_wrap.unRegMessageListener(self)
-        
         return isMatch

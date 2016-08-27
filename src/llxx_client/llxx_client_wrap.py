@@ -52,11 +52,6 @@ class llxx_client_wrap(llxx_client_listner):
         ## send to reg client
         for listener in self.messageListeners:
             listener.onMessage(message);
-            
-        target = json.JSONDecoder().decode(message)  
-        if target['action'] == "notify":
-            showtoast = target['classname'] == "android.widget.Toast$TN"
-            print showtoast
 
     def monkey_service_listener(self, message):
             print ("monkey_service receive message -> " + message)

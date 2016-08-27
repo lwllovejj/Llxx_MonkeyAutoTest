@@ -65,6 +65,7 @@ class llxx_client:
             self.socket_listener.connect(("127.0.0.1", 8082))
             # 开始连接
             t = threading.Thread(target=self._listener, args=())
+            t.setDaemon(True)
             t.start()
         except:
             print "can`t connect 127.0.0.1:8082"
@@ -74,6 +75,7 @@ class llxx_client:
             self.socket_monkeyrunner.connect(("127.0.0.1", 9999))
             # 开始连接
             t = threading.Thread(target=self._monkeyrunner, args=())
+            t.setDaemon(True)
             t.start()
         except:
             print "can`t connect 127.0.0.1:9999"
