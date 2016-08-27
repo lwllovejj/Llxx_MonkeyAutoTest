@@ -30,7 +30,6 @@ if isMatch:
 
 
 queryNome = QueryCommand()
-queryNome.queryNone()
 queryNome.queryListView()
 client.runCommand(queryNome)
 print queryNome.getCommand()
@@ -43,4 +42,10 @@ isMatch = waitForClick.waitForClick(u"android.widget.TextView", u"军事")
 if isMatch:
     print "waitForClick ok"
 #     
+
+queryNome.queryListView()
+client.runCommand(queryNome)
+print queryNome.getCommand()
+
+isMatch = waitForClick.waitForClick(u"android.widget.TextView", u"军事")
 exit(0)

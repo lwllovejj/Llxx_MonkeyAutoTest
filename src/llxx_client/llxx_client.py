@@ -24,6 +24,11 @@ class llxx_client:
         
         # 监听客户端的点击事件
         self.socket_listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket_listener.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
+        self.socket_listener.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 1024 * 20)
+        self.socket_listener.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1024 * 20)
+        bufsize = self.socket_listener.getsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF)
+        print( "Buffer size [After]: %d" %bufsize)
         
         # 处理monkeyrunner的点击事件
         self.socket_monkeyrunner = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
