@@ -7,6 +7,7 @@ Created on 2016年8月26日
 
 from abc import abstractmethod
 import simplejson as json
+import os
 
 class command:
     
@@ -83,6 +84,7 @@ class QueryCommand(command):
     query listview
     '''
     def queryListView(self):
+        os.system("python ../dump/dumpsnap.py")
         self._command['type'] = self.QUERY_TYPE_BY_LISTVIEW
         
     

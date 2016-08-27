@@ -31,7 +31,6 @@ if isMatch:
 
 queryNome = QueryCommand()
 queryNome.queryListView()
-client.runCommand(queryNome)
 print queryNome.getCommand()
 
 ##　test perform click text
@@ -43,8 +42,6 @@ waitForClick = llxx_wait(u"com.llxx.service", client);
 #     print "waitForClick ok"
 #     
 
-queryNome.queryListView()
-client.runCommand(queryNome)
 print queryNome.getCommand()
 
 isMatch = waitForClick.waitForClick(u"android.widget.TextView", u"军事")
