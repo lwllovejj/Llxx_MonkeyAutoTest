@@ -56,7 +56,28 @@ class ClickCommand(command):
     def performClickByName(self, name):
         self._command['clicktype'] = self.CLICK_TYPE_BY_NAME
         self._command['name'] = name
+
+
+'''
+query
+'''
+class QueryCommand(command):
     
+    def __init__(self):
+        command.__init__(self)
+        self.QUERY_TYPE_BY_NONE = 0x00
+
+        
+    
+    def getAction(self):
+        return "queryAccessibility"
+    
+    '''
+    query none for test
+    '''
+    def queryNone(self):
+        self._command['type'] = self.QUERY_TYPE_BY_NONE
+
 if __name__ == '__main__':
     click = ClickCommand()
     click.performClickById("com.llxx.service:id/open_toast")
