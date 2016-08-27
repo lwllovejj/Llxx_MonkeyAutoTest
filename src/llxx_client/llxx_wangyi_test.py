@@ -35,12 +35,12 @@ client.runCommand(queryNome)
 print queryNome.getCommand()
 
 ##　test perform click text
-click.performClickByName(u"军事")
+# click.performClickByName(u"军事")
 waitForClick = llxx_wait(u"com.llxx.service", client);
-client.runCommand(click)
-isMatch = waitForClick.waitForClick(u"android.widget.TextView", u"军事")
-if isMatch:
-    print "waitForClick ok"
+# client.runCommand(click)
+# isMatch = waitForClick.waitForClick(u"android.widget.TextView", u"军事")
+# if isMatch:
+#     print "waitForClick ok"
 #     
 
 queryNome.queryListView()

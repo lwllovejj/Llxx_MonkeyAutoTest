@@ -24,10 +24,12 @@ class llxx_client:
         
         # 监听客户端的点击事件
         self.socket_listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket_listener.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
-        self.socket_listener.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 1024 * 20)
-        self.socket_listener.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1024 * 20)
-        bufsize = self.socket_listener.getsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF)
+        #self.socket_listener.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
+        #s.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 30 * 1024**2)
+        #s.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 30 * 1024**2)
+        self.socket_listener.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 30 * 1024**2)
+        self.socket_listener.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 30 * 1024**2)
+        bufsize = self.socket_listener.getsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF)
         print( "Buffer size [After]: %d" %bufsize)
         
         # 处理monkeyrunner的点击事件
@@ -40,17 +42,28 @@ class llxx_client:
 
     def _listener(self):
         print "_listener start"
+        
+        # BUG 这里的分段1057 需要严格测试
+        dataAll = ""
         while(True):
-            data = self.socket_listener.recv(1024 * 20)  # 阻塞线程，接受消息
-            #print "_listener receive->" + data
-            self.listener_apk_service(data)
+            data = self.socket_listener.recv(1024)  # 阻塞线程，接受消息
+            dataAll = dataAll + data
+            if(data.__sizeof__() != 1057):
+                #print "_listener receive->" + data
+                self.listener_apk_service(dataAll)
+                dataAll = ""
         
     def _monkeyrunner(self):
         print "_monkeyrunner start"
+        dataAll = ""
         while(True):
-            data = self.socket_monkeyrunner.recv(1024 * 20)  # 阻塞线程，接受消息
+            data = self.socket_monkeyrunner.recv(1024)  # 阻塞线程，接受消息
             #print "_listener receive->" + data
-            self.listener_monkeyrunner_service(data)
+            dataAll = dataAll + data
+            if(data.__sizeof__() != 1057):
+                #print "_listener receive->" + data
+                self.listener_monkeyrunner_service(dataAll)
+                dataAll = ""
             
     '''
     send message to Android Apk Service
