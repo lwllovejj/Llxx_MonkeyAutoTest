@@ -2,12 +2,14 @@
 '''
 Created on 2016年8月26日
 
-@author: waywings-3
+@author: fanxin, eachen
 '''
 
 from abc import abstractmethod
 import simplejson as json
 import os
+from fileinput import filename
+import types
 
 class command:
     
@@ -79,13 +81,45 @@ class QueryCommand(command):
     '''
     def queryNone(self):
         self._command['type'] = self.QUERY_TYPE_BY_NONE
-        
+    
+    def safeDelFile(self, fildpath, filename):
+        targetFile = os.path.join(fildpath,  filename)      
+        if os.path.isfile(targetFile): 
+            os.remove(targetFile)
+    
+    def findJsonNode(self, msg, key, value, lists):
+        target = msg;
+        if type(target) == types.DictType:
+            if key in target.keys() and target[key] == value:
+                lists.append(target)
+            if 'node' in target.keys():
+                self.findJsonNode(target['node'], key, value, lists)
+        if type(target) == types.ListType:
+            for _target in target:
+                self.findJsonNode(_target, key, value, lists)
+                
+    def queryHierarchy(self):
+        self.safeDelFile("",  "uidump.json")
+        self.safeDelFile("",  "uidump.xml")
+        os.system("python ../dump/dumpsnap.py")
+        file_object = open('uidump.json')
+        try:
+            all_the_text = file_object.read()
+            target = json.JSONDecoder().decode(all_the_text)
+            all_the_text = target["hierarchy"]
+            all_the_text = json.dumps(all_the_text, sort_keys=True, indent=4)
+        finally:
+            file_object.close( )
+        message = json.JSONDecoder().decode(all_the_text)
+        return message
     '''
     query listview
     '''
     def queryListView(self):
-        os.system("python ../dump/dumpsnap.py")
-        self._command['type'] = self.QUERY_TYPE_BY_LISTVIEW
+        text = self.queryHierarchy()
+        lists = []
+        self.findJsonNode(text, 'class', "android.widget.ListView", lists)
+        return lists
         
     
 

@@ -16,7 +16,7 @@ except ValueError as e:
     print("Invalid JSON file. Reason:")
     sys.exit(e)
 
-formatted_contents = json.dumps(contents, sort_keys=True, indent=4)
+formatted_contents = json.dumps(contents, sort_keys=True, indent=2)
 
 with open(file_name, "w") as file:
     file.write(formatted_contents)
