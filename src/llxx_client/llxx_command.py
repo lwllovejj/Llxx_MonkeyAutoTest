@@ -91,12 +91,50 @@ class QueryCommand(command):
         target = msg;
         if type(target) == types.DictType:
             if key in target.keys() and target[key] == value:
-                lists.append(target)
+                lists.append(self._packNodeWithoutChild(target))
+            
             if 'node' in target.keys():
                 self.findJsonNode(target['node'], key, value, lists)
+                
         if type(target) == types.ListType:
             for _target in target:
                 self.findJsonNode(_target, key, value, lists)
+                
+    def _packNodeWithoutChild(self, msg):
+        #{'index': '1', 'selected': 'false', 'checked': 'false', 'package': 'com.netease.newsreader.activity', 
+        #'focusable': 'false', 'long-clickable': 'false', 'enabled': 'true', 'bounds': '[0,0][1080,78]', 
+        # 'content-desc': u'', 'resource-id': 'android:id/statusBarBackground', 'focused': 'false', 'clickable': 
+        # 'false', 'checkable': 'false', 'password': 'false', 'text': u'', 'class': 'android.view.View', 'scrollable': 'false'}
+        target = {}
+        target['index'] = msg['index']
+        target['resource-id'] = msg['resource-id']
+        target['package'] = msg['package']
+        target['class'] = msg['class']
+        target['text'] = msg['text']
+        target['selected'] = msg['selected']
+        target['checked'] = msg['checked']
+        target['focusable'] = msg['focusable']
+        target['long-clickable'] = msg['long-clickable']
+        target['enabled'] = msg['enabled']
+        target['focusable'] = msg['focusable']
+        target['bounds'] = msg['bounds']
+        target['focused'] = msg['focused']
+        target['clickable'] = msg['clickable']
+        target['checkable'] = msg['checkable']
+        target['password'] = msg['password']
+        target['scrollable'] = msg['scrollable']
+        return target
+    
+    def _findNodeIdNotNull(self, msg, lists):
+        target = msg;
+        if type(target) == types.DictType:
+            if 'resource-id' in target.keys() and target['resource-id'] != None and target['resource-id'] != '':
+                lists.append(self._packNodeWithoutChild(target))
+            if 'node' in target.keys():
+                self._findNodeIdNotNull(target['node'], lists)
+        if type(target) == types.ListType:
+            for _target in target:
+                self._findNodeIdNotNull(_target, lists)
                 
     def queryHierarchy(self):
         self.safeDelFile("",  "uidump.json")
@@ -121,8 +159,21 @@ class QueryCommand(command):
         self.findJsonNode(text, 'class', "android.widget.ListView", lists)
         return lists
         
+    '''
     
-
+    '''
+    def queryIdNotNull(self):
+        text = self.queryHierarchy()
+        lists = []
+        self._findNodeIdNotNull(text, lists)
+        return lists
+    
+    def queryCanclick(self):
+        text = self.queryHierarchy()
+        lists = []
+        self.findJsonNode(text, 'clickable', "true", lists)
+        return lists
+    
 if __name__ == '__main__':
     click = ClickCommand()
     click.performClickById("com.llxx.service:id/open_toast")

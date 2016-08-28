@@ -7,5 +7,15 @@ Created on 2016年8月27日
 
 from llxx_command import QueryCommand
 
-queryNome = QueryCommand()
-print queryNome.queryListView()
+#queryNome = QueryCommand()
+#print queryNome.queryListView()
+
+
+queryId = QueryCommand()
+# lists = queryId.queryIdNotNull()
+# for node in lists:
+#     print node
+    
+lists = queryId.queryCanclick()
+for node in lists:
+    print node
