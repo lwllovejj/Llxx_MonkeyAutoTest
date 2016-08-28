@@ -24,13 +24,8 @@ class llxx_client:
         
         # 监听客户端的点击事件
         self.socket_listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        #self.socket_listener.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
-        #s.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 30 * 1024**2)
-        #s.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 30 * 1024**2)
-        self.socket_listener.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 30 * 1024**2)
-        self.socket_listener.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 30 * 1024**2)
-        bufsize = self.socket_listener.getsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF)
-        print( "Buffer size [After]: %d" %bufsize)
+        
+        self.uiautomator_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         
         # 处理monkeyrunner的点击事件
         self.socket_monkeyrunner = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -39,7 +34,9 @@ class llxx_client:
         
         self.listener_monkeyrunner_service = listenerMonkeyRunnerService
         
-
+    def _setuiautomator_listtener(self, uiautomator_listtener):
+        self.uiautomator_listtener = uiautomator_listtener
+        
     def _listener(self):
         print "_listener start"
         
@@ -64,7 +61,18 @@ class llxx_client:
                 #print "_listener receive->" + data
                 self.listener_monkeyrunner_service(dataAll)
                 dataAll = ""
-            
+    def _uiautomator(self):
+        print "_uiautomator start"
+        dataAll = ""
+        while(True):
+            data = self.uiautomator_client.recv(1024)  # 阻塞线程，接受消息
+            #print "_listener receive->" + data
+            dataAll = dataAll + data
+            if(data.__sizeof__() != 1057):
+                #print "_listener receive->" + data
+                if self.uiautomator_listtener != None and dataAll != '':
+                    self.uiautomator_listtener(dataAll)
+                    dataAll = ""       
     '''
     send message to Android Apk Service
     '''
@@ -77,6 +85,10 @@ class llxx_client:
     def sendToMonkeyRunner(self, msg):
         self.socket_monkeyrunner.send(msg);
         
+    
+    def sendToUiAnimator(self, msg):
+        self.uiautomator_client.send(msg)
+        
     def _start(self):
         try:
             # 调用connect 连接本地(127.0.0.1) 的8082端口
@@ -87,6 +99,16 @@ class llxx_client:
             t.start()
         except:
             print "can`t connect 127.0.0.1:8082"
+            
+        try:
+            # 调用connect 连接本地(127.0.0.1) 的8082端口
+            self.uiautomator_client.connect(("127.0.0.1", 8083))
+            # 开始连接
+            t = threading.Thread(target=self._uiautomator, args=())
+            t.setDaemon(True)
+            t.start()
+        except:
+            print "can`t connect 127.0.0.1:8083"
             
         try:
             # 调用connect 连接本地(127.0.0.1) 的9999端口

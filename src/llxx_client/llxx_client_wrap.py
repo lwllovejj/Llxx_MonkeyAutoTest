@@ -36,7 +36,11 @@ class llxx_client_wrap(llxx_client_listner):
     
     messageListeners = []
     def __init__(self):
+        os.system("adb forward tcp:8082 tcp:8082")
+        os.system("adb forward tcp:8083 tcp:8083")
+        
         self._llxx_client = llxx_client(self.apk_service_listener, self.monkey_service_listener);
+        self._llxx_client._setuiautomator_listtener(self.uiautomator_service_listener)
         self._llxx_client._start()
         
     def onMessage(self, message):
@@ -54,9 +58,20 @@ class llxx_client_wrap(llxx_client_listner):
             listener.onMessage(message);
 
     def monkey_service_listener(self, message):
-            print ("monkey_service receive message -> " + message)
-            target = json.JSONDecoder().decode(message)  
-            print target['action']  
+        print ("monkey_service receive message -> " + message)
+        ## send to reg client
+        for listener in self.messageListeners:
+            listener.onMessage(message);
+#             target = json.JSONDecoder().decode(message)  
+#             print target['action']  
+            
+    def uiautomator_service_listener(self, message):
+        print ("uiautomator service receive message -> " + message)
+        ## send to reg client
+        for listener in self.messageListeners:
+            listener.onMessage(message);
+#             target = json.JSONDecoder().decode(message)  
+#             print target['action']  
     '''
     send message to Android Apk Service
     '''
@@ -68,6 +83,12 @@ class llxx_client_wrap(llxx_client_listner):
     '''
     def sendToMonkeyRunner(self, msg):
         self.socket_monkeyrunner.send(msg);
+        
+    '''
+    send message to Uianimator Service
+    '''
+    def sendToUianimator(self, msg):
+        self._llxx_client.sendToUiAnimator(msg)
     
     def runCommand(self, command):
         self.sendToService(command.getCommand())
