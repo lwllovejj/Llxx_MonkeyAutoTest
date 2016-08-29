@@ -11,4 +11,5 @@ encoding//src/llxx_client/llxx_wait.py=utf-8
 encoding//src/llxx_client/llxx_wangyi_test.py=utf-8
 encoding//src/llxx_client/llxx_z_test_query.py=utf-8
 encoding//src/llxx_client/llxx_z_test_uiautomator.py=utf-8
+encoding//src/llxx_client/llxx_z_test_uiservice.py=utf-8
 encoding//src/monkeytest/monkeyrunner_demo.py=utf-8

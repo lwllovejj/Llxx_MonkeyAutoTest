@@ -107,14 +107,17 @@ class QueryCommand(command):
         # 'false', 'checkable': 'false', 'password': 'false', 'text': u'', 'class': 'android.view.View', 'scrollable': 'false'}
         target = {}
         target['index'] = msg['index']
+        target['text'] = msg['text']
+        
         target['resource-id'] = msg['resource-id']
+        target['content-desc'] = msg['content-desc']
+        
         target['package'] = msg['package']
         target['class'] = msg['class']
-        target['text'] = msg['text']
+        
         target['selected'] = msg['selected']
         target['checked'] = msg['checked']
         target['focusable'] = msg['focusable']
-        target['long-clickable'] = msg['long-clickable']
         target['enabled'] = msg['enabled']
         target['focusable'] = msg['focusable']
         target['bounds'] = msg['bounds']
@@ -123,6 +126,7 @@ class QueryCommand(command):
         target['checkable'] = msg['checkable']
         target['password'] = msg['password']
         target['scrollable'] = msg['scrollable']
+        target['long-clickable'] = msg['long-clickable']
         return target
     
     def _findNodeIdNotNull(self, msg, lists):

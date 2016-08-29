@@ -23,12 +23,21 @@ class llxx_client:
     def __init__(self, listenerApkService , listenerMonkeyRunnerService):
         
         # 监听客户端的点击事件
-        self.socket_listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket_listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM )
+        self.socket_listener.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
+        self.socket_listener.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 30 * 1024 * 2)
+        self.socket_listener.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 30 * 1024 * 2)
         
-        self.uiautomator_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.uiautomator_client = socket.socket()
+        self.uiautomator_client.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
+        self.uiautomator_client.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 30 * 1024 * 2)
+        self.uiautomator_client.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 30 * 1024 * 2)
         
         # 处理monkeyrunner的点击事件
-        self.socket_monkeyrunner = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket_monkeyrunner = socket.socket()
+        self.socket_monkeyrunner.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
+        self.socket_monkeyrunner.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 30 * 1024 * 2)
+        self.socket_monkeyrunner.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 30 * 1024 * 2)
         
         self.listener_apk_service = listenerApkService
         
@@ -46,7 +55,7 @@ class llxx_client:
             data = self.socket_listener.recv(1024)  # 阻塞线程，接受消息
             dataAll = dataAll + data
             if(data.__sizeof__() != 1057):
-                #print "_listener receive->" + data
+                # print "_listener receive->" + data
                 self.listener_apk_service(dataAll)
                 dataAll = ""
         
@@ -55,10 +64,10 @@ class llxx_client:
         dataAll = ""
         while(True):
             data = self.socket_monkeyrunner.recv(1024)  # 阻塞线程，接受消息
-            #print "_listener receive->" + data
+            # print "_listener receive->" + data
             dataAll = dataAll + data
             if(data.__sizeof__() != 1057):
-                #print "_listener receive->" + data
+                # print "_listener receive->" + data
                 self.listener_monkeyrunner_service(dataAll)
                 dataAll = ""
     def _uiautomator(self):
@@ -66,10 +75,10 @@ class llxx_client:
         dataAll = ""
         while(True):
             data = self.uiautomator_client.recv(1024)  # 阻塞线程，接受消息
-            #print "_listener receive->" + data
+            # print "_listener receive->" + data
             dataAll = dataAll + data
             if(data.__sizeof__() != 1057):
-                #print "_listener receive->" + data
+                # print "_listener receive->" + data
                 if self.uiautomator_listtener != None and dataAll != '':
                     self.uiautomator_listtener(dataAll)
                     dataAll = ""       
