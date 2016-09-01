@@ -96,7 +96,7 @@ class llxx_client:
         
     
     def sendToUiAnimator(self, msg):
-        self.uiautomator_client.send(msg)
+        self.uiautomator_client.send(msg + "}")
         
     def _start(self):
         try:

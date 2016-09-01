@@ -10,6 +10,7 @@ from llxx_command import QueryCommand
 
 from llxx_client_wrap import llxx_client_wrap
 import simplejson as json
+from llxx_wait import llxx_wait
 import time
 
 client = llxx_client_wrap()
@@ -25,8 +26,6 @@ testuinode["params"] = params
 params["node"] = nodes
 
 print json.dumps(testuinode, sort_keys=True)
-client.sendToUianimator(json.dumps(testuinode, sort_keys=True) + "}")
+client.sendToUianimator(json.dumps(testuinode, sort_keys=True))
+print llxx_wait("",client).waitFor(testuinode, 10)
 
-while True:
-    
-    time.sleep(2)

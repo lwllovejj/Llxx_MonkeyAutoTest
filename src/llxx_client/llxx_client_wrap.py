@@ -36,6 +36,8 @@ class llxx_client_wrap(llxx_client_listner):
     
     messageListeners = []
     def __init__(self):
+        self.debug = False
+        
         os.system("adb forward tcp:8082 tcp:8082")
         os.system("adb forward tcp:8083 tcp:8083")
         
@@ -50,15 +52,16 @@ class llxx_client_wrap(llxx_client_listner):
         self._target(message)
     
     def apk_service_listener(self, message):
-        global showtoast
-        print ("apk_service receive message -> " + message)
+        if self.debug:
+            print ("apk_service receive message -> " + message)
         
         ## send to reg client
         for listener in self.messageListeners:
             listener.onMessage(message);
 
     def monkey_service_listener(self, message):
-        print ("monkey_service receive message -> " + message)
+        if self.debug:
+            print ("monkey_service receive message -> " + message)
         ## send to reg client
         for listener in self.messageListeners:
             listener.onMessage(message);
@@ -66,7 +69,8 @@ class llxx_client_wrap(llxx_client_listner):
 #             print target['action']  
             
     def uiautomator_service_listener(self, message):
-        print ("uiautomator service receive message -> " + message)
+        if self.debug:
+            print ("uiautomator service receive message -> " + message)
         ## send to reg client
         for listener in self.messageListeners:
             listener.onMessage(message);
