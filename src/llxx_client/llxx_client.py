@@ -74,14 +74,19 @@ class llxx_client:
         print "_uiautomator start"
         dataAll = ""
         while(True):
-            data = self.uiautomator_client.recv(1024)  # 阻塞线程，接受消息
-            # print "_listener receive->" + data
-            dataAll = dataAll + data
-            if(data.__sizeof__() != 1057):
+            try:
+                data = self.uiautomator_client.recv(1024)  # 阻塞线程，接受消息
                 # print "_listener receive->" + data
-                if self.uiautomator_listtener != None and dataAll != '':
-                    self.uiautomator_listtener(dataAll)
-                    dataAll = ""       
+                dataAll = dataAll + data
+                if(data.__sizeof__() != 1057):
+                    # print "_listener receive->" + data
+                    if self.uiautomator_listtener != None and dataAll != '':
+                        self.uiautomator_listtener(dataAll)
+                        dataAll = ""  
+            except Exception,e:
+                if str(e).strip() == "[Errno 10053]":
+                    print "Error: uiautomator service is closed"
+                    break;
     '''
     send message to Android Apk Service
     '''
