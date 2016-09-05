@@ -15,7 +15,7 @@ import types
 class command:
     
     def __init__(self):
-        self._command= {
+        self._command = {
             'action': self.getAction()
         }
         
@@ -73,12 +73,19 @@ class Query(command):
     def getAction(self):
         return "query"
     
-    def getTopActivity(self):
-        self._command['type'] = 'top_activity'
+    def priviteWaitParams(self):
         self.client_wrap.runCommand(self)
         result = llxx_wait(self.client_wrap).waitForParams(self._command, 10)
         if result != None and result['sucess']:
-            return result['params']['class']
+            return result['params']
+        return None
+    
+    def getTopActivity(self):
+        self._command['type'] = 'top_activity'
+        result = self.priviteWaitParams()
+        
+        if result != None:
+            return result['class']
         return None
 '''
 query
@@ -102,7 +109,7 @@ class QueryCommand(command):
         self._command['type'] = self.QUERY_TYPE_BY_NONE
     
     def safeDelFile(self, fildpath, filename):
-        targetFile = os.path.join(fildpath,  filename)      
+        targetFile = os.path.join(fildpath, filename)      
         if os.path.isfile(targetFile): 
             os.remove(targetFile)
     
@@ -120,8 +127,8 @@ class QueryCommand(command):
                 self.findJsonNode(_target, key, value, lists)
                 
     def _packNodeWithoutChild(self, msg):
-        #{'index': '1', 'selected': 'false', 'checked': 'false', 'package': 'com.netease.newsreader.activity', 
-        #'focusable': 'false', 'long-clickable': 'false', 'enabled': 'true', 'bounds': '[0,0][1080,78]', 
+        # {'index': '1', 'selected': 'false', 'checked': 'false', 'package': 'com.netease.newsreader.activity', 
+        # 'focusable': 'false', 'long-clickable': 'false', 'enabled': 'true', 'bounds': '[0,0][1080,78]', 
         # 'content-desc': u'', 'resource-id': 'android:id/statusBarBackground', 'focused': 'false', 'clickable': 
         # 'false', 'checkable': 'false', 'password': 'false', 'text': u'', 'class': 'android.view.View', 'scrollable': 'false'}
         target = {}
@@ -160,8 +167,8 @@ class QueryCommand(command):
                 self._findNodeIdNotNull(_target, lists)
                 
     def queryHierarchy(self):
-        self.safeDelFile("",  "uidump.json")
-        self.safeDelFile("",  "uidump.xml")
+        self.safeDelFile("", "uidump.json")
+        self.safeDelFile("", "uidump.xml")
         os.system("python ../dump/dumpsnap.py")
         file_object = open('uidump.json')
         try:
@@ -170,7 +177,7 @@ class QueryCommand(command):
             all_the_text = target["hierarchy"]
             all_the_text = json.dumps(all_the_text, sort_keys=True, indent=4)
         finally:
-            file_object.close( )
+            file_object.close()
         message = json.JSONDecoder().decode(all_the_text)
         return message
     '''
