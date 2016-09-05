@@ -12,4 +12,4 @@ from llxx_client_wrap import llxx_client_wrap
 
 client = llxx_client_wrap()
 query = Query(client)
-query.getTopActivity()
+print query.getTopActivity()

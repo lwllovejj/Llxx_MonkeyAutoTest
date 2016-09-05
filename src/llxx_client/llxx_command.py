@@ -77,8 +77,9 @@ class Query(command):
         self._command['type'] = 'top_activity'
         self.client_wrap.runCommand(self)
         result = llxx_wait(self.client_wrap).waitForParams(self._command, 10)
-        print result
-    
+        if result != None and result['sucess']:
+            return result['params']['class']
+        return None
 '''
 query
 '''
