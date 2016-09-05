@@ -11,8 +11,7 @@ import time
 class llxx_wait:
     
     messageList = [] 
-    def __init__(self, packagename, llxx_client_wrap):
-        self._packagename = packagename
+    def __init__(self, llxx_client_wrap):
         self._llxx_client_wrap = llxx_client_wrap
     
     def onMessage(self, message):
@@ -20,12 +19,12 @@ class llxx_wait:
             self.messageList.append(message)
         # print "llxx_wait onMessage ->" + message
     
-    ## 等待指定的数据
+        # # 等待指定的数据
     '''
     @param maps: 对应数据字典
     @param timeout: 超时时间
     '''
-    def waitFor(self, maps , timeout):
+    def waitForParams(self, maps , timeout):
         self._llxx_client_wrap.regMessageListner(self)
         isMatch = False
         timetotal = 0.0
@@ -50,18 +49,28 @@ class llxx_wait:
             timetotal += 0.1
             time.sleep(0.1)
         self._llxx_client_wrap.unRegMessageListener(self)
+        return message
+    
+    # # 等待指定的数据
+    '''
+    @param maps: 对应数据字典
+    @param timeout: 超时时间
+    '''
+    def waitFor(self, maps , timeout):
+        message = self.waitForParams(maps , timeout)
         if message != None:
             return message["sucess"]
         print "wait for " + str(maps) + " timeout"
         return False
-        
+    
+
     
     def waitForActivity(self, activityName):
         self._llxx_client_wrap.regMessageListner(self)
         isMatch = False
         isBreak = False
         while True and (isBreak == False):
-            #print self.messageList
+            # print self.messageList
             for msg in self.messageList:
                 target = json.JSONDecoder().decode(msg)
                 if target['action'] == "start" and target['classname'] == activityName and target['type'] == "activity":
@@ -87,7 +96,7 @@ class llxx_wait:
         isMatch = False
         isBreak = False
         while True and (isBreak == False):
-            #print self.messageList
+            # print self.messageList
             for msg in self.messageList:
                     target = json.JSONDecoder().decode(msg)
                     if target['action'] == "notify" and target['classname'] == classname and target['title'] == title:
@@ -104,7 +113,7 @@ class llxx_wait:
         isMatch = False
         isBreak = False
         while True and (isBreak == False):
-            #print self.messageList
+            # print self.messageList
             for msg in self.messageList:
                 target = json.JSONDecoder().decode(msg)
                 if target['action'] == "click" and target['classname'] == classname and target['title'] == title:

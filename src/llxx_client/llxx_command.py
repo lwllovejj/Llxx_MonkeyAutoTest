@@ -9,6 +9,7 @@ from abc import abstractmethod
 import simplejson as json
 import os
 from fileinput import filename
+from llxx_wait import llxx_wait
 import types
 
 class command:
@@ -60,7 +61,24 @@ class ClickCommand(command):
         self._command['clicktype'] = self.CLICK_TYPE_BY_NAME
         self._command['name'] = name
 
-
+'''
+query
+'''
+class Query(command):
+    
+    def __init__(self, client_wrap):
+        command.__init__(self)
+        self.client_wrap = client_wrap
+    
+    def getAction(self):
+        return "query"
+    
+    def getTopActivity(self):
+        self._command['type'] = 'top_activity'
+        self.client_wrap.runCommand(self)
+        result = llxx_wait(self.client_wrap).waitForParams(self._command, 10)
+        print result
+    
 '''
 query
 '''
@@ -177,7 +195,9 @@ class QueryCommand(command):
         lists = []
         self.findJsonNode(text, 'clickable', "true", lists)
         return lists
-    
+        
+        
+        
 if __name__ == '__main__':
     click = ClickCommand()
     click.performClickById("com.llxx.service:id/open_toast")
