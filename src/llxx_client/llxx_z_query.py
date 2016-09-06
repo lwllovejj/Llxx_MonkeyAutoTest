@@ -12,4 +12,12 @@ from llxx_client_wrap import llxx_client_wrap
 
 client = llxx_client_wrap()
 query = Query(client)
+
+## 查询当前的Activity是哪个
 print query.getTopActivity()
+
+## 查询当前的屏幕尺寸
+print query.getScreenSize()
+
+## 查询当前的屏幕尺寸
+print query.getAllActivity("com.netease.newsreader.activity")

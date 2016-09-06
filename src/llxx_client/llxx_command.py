@@ -8,7 +8,6 @@ Created on 2016年8月26日
 from abc import abstractmethod
 import simplejson as json
 import os
-from fileinput import filename
 from llxx_wait import llxx_wait
 import types
 
@@ -18,11 +17,14 @@ class command:
         self._command = {
             'action': self.getAction()
         }
+        self._params = {
         
+        }
     '''
     get command
     '''
     def getCommand(self):
+        self._command['params'] = self._params
         return json.dumps(self._command, sort_keys=True) + "}"
     
     @abstractmethod
@@ -86,6 +88,30 @@ class Query(command):
         
         if result != None:
             return result['class']
+        return None
+    
+    '''
+    get screen size
+    @return: result['width':width, 'height':height]
+    '''
+    def getScreenSize(self):
+        self._command['type'] = 'screensize'
+        result = self.priviteWaitParams()
+        
+        if result != None:
+            return result
+        return None
+    '''
+    get screen size
+    @return: result['width':width, 'height':height]
+    '''
+    def getAllActivity(self, package):
+        self._command['type'] = 'allactivity'
+        self._params['package'] = package
+        result = self.priviteWaitParams()
+        
+        if result != None:
+            return result
         return None
 '''
 query
