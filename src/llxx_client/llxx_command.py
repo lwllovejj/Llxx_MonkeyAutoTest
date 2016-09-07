@@ -63,6 +63,28 @@ class ClickCommand(command):
         self._command['clicktype'] = self.CLICK_TYPE_BY_NAME
         self._command['name'] = name
 
+class RegPakcages(command):
+    
+    def __init__(self, client_wrap):
+        command.__init__(self)
+        self.client_wrap = client_wrap
+    
+    def getAction(self):
+        return "regPackage"
+
+    def priviteWaitParams(self):
+        self.client_wrap.runCommand(self)
+        result = llxx_wait(self.client_wrap).waitForParams(self._command, 10)
+        if result != None and result['sucess']:
+            if 'params' in result.keys():
+                return result['params']
+            return True
+        return False
+    
+    def regPackages(self, packages):
+        self._params['packages'] = packages
+        self.priviteWaitParams()
+        
 '''
 query
 '''
@@ -249,7 +271,7 @@ class QueryCommand(command):
         self.findJsonNode(text, 'clickable', "true", lists)
         return lists
         
-        
+##regPackage        
         
 if __name__ == '__main__':
     click = ClickCommand()
