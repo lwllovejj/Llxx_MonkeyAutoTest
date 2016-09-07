@@ -102,12 +102,21 @@ class Query(command):
             return result
         return None
     '''
-    get screen size
-    @return: result['width':width, 'height':height]
+    get package all Activity
+    @return: {'activitys': [{'name': 'xxx.xxx.xxx.Activity1'}, {'name': 'xxx.xxx.xxx.Activity2'}]}
     '''
     def getAllActivity(self, package):
         self._command['type'] = 'allactivity'
         self._params['package'] = package
+        result = self.priviteWaitParams()
+        
+        if result != None:
+            return result
+        return None
+    
+    def getAllAppInfo(self):
+        self._command['type'] = 'allappinfo'
+        self._params['dir'] = '/sdcard/llxx/'
         result = self.priviteWaitParams()
         
         if result != None:

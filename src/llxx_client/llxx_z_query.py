@@ -19,5 +19,8 @@ print query.getTopActivity()
 ## 查询当前的屏幕尺寸
 print query.getScreenSize()
 
-## 查询当前的屏幕尺寸
+## 查询 com.netease.newsreader.activity 中所有的Activity
 print query.getAllActivity("com.netease.newsreader.activity")
+
+## 查询所有的App信息
+print query.getAllAppInfo()
