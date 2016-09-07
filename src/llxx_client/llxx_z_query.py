@@ -22,5 +22,8 @@ print query.getScreenSize()
 ## 查询 com.netease.newsreader.activity 中所有的Activity
 print query.getAllActivity("com.netease.newsreader.activity")
 
+print query.getAllService("com.netease.newsreader.activity")
+print query.getAllService("com.llxx.service")
+
 ## 查询所有的App信息
 print query.getAllAppInfo()

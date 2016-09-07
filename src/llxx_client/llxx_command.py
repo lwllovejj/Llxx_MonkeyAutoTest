@@ -114,6 +114,16 @@ class Query(command):
             return result
         return None
     
+    
+    def getAllService(self, package):
+        self._command['type'] = 'allservice'
+        self._params['package'] = package
+        result = self.priviteWaitParams()
+        
+        if result != None:
+            return result
+        return None
+        
     def getAllAppInfo(self):
         self._command['type'] = 'allappinfo'
         self._params['dir'] = '/sdcard/llxx/'
