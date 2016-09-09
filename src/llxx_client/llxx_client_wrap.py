@@ -6,6 +6,7 @@ Created on 2016年8月26日
 '''
 import os
 import sys
+import time
 
 curPath = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(curPath)
@@ -44,6 +45,7 @@ class llxx_client_wrap(llxx_client_listner):
         self._llxx_client = llxx_client(self.apk_service_listener, self.monkey_service_listener);
         self._llxx_client._setuiautomator_listtener(self.uiautomator_service_listener)
         self._llxx_client._start()
+        time.sleep(1)
         
     def onMessage(self, message):
         #print ("receive message -> " + message)

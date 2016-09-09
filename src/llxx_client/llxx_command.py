@@ -83,7 +83,7 @@ class RegPakcages(command):
     
     def regPackages(self, packages):
         self._params['packages'] = packages
-        self.priviteWaitParams()
+        return self.priviteWaitParams()
         
 '''
 query
