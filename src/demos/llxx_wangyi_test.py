@@ -10,10 +10,15 @@ from llxx_client_wrap import llxx_client_wrap
 from llxx_command import ClickCommand
 from llxx_command import QueryCommand
 from llxx_wait import llxx_wait
+from llxx_command import RegPakcages
 
-os.system("adb forward tcp:8082 tcp:8082")
-    
 client = llxx_client_wrap()
+
+regpackages = RegPakcages(client)
+package = []
+package.append("com.netease.newsreader.activity")
+print regpackages.regPackages(package)
+
 print "------------"
 click = ClickCommand()
 
@@ -23,26 +28,8 @@ os.system("adb shell am force-stop com.netease.newsreader.activity")
 os.system("adb shell am start com.netease.newsreader.activity/com.netease.nr.biz.ad.AdActivity")
  
 # com.netease.newsreader.activity/com.netease.nr.phone.main.MainActivity
-waitActivity = llxx_wait("com.netease.newsreader.activity", client);
+# 等待主Activity启动
+waitActivity = llxx_wait(client);
 isMatch = waitActivity.waitForActivity("com.netease.nr.phone.main.MainActivity")
 if isMatch:
     print "waitForActivity com.netease.nr.phone.main.MainActivity ok"
-
-
-queryNome = QueryCommand()
-queryNome.queryListView()
-print queryNome.getCommand()
-
-##　test perform click text
-# click.performClickByName(u"军事")
-waitForClick = llxx_wait(u"com.llxx.service", client);
-# client.runCommand(click)
-# isMatch = waitForClick.waitForClick(u"android.widget.TextView", u"军事")
-# if isMatch:
-#     print "waitForClick ok"
-#     
-
-print queryNome.getCommand()
-
-isMatch = waitForClick.waitForClick(u"android.widget.TextView", u"军事")
-exit(0)

@@ -73,7 +73,7 @@ class llxx_wait:
             # print self.messageList
             for msg in self.messageList:
                 target = json.JSONDecoder().decode(msg)
-                if target['action'] == "start" and target['classname'] == activityName and target['type'] == "activity":
+                if target['action'] == "start_activity" and target['params']['classname'] == activityName:
                     isMatch = True;
                     isBreak = True
                     self.messageList.remove(msg)
