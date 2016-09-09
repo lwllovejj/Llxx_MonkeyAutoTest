@@ -2,6 +2,7 @@ eclipse.preferences.version=1
 encoding//src/appium/appium_test_llxx_service.py=utf-8
 encoding//src/demos/llxx_z_query.py=utf-8
 encoding//src/demos/llxx_z_reg.py=utf-8
+encoding//src/demos/llxx_z_waitmessage.py=utf-8
 encoding//src/dump/dumpsnap.py=utf-8
 encoding//src/dump/jsonformat.py=utf-8
 encoding//src/dump/xmltoJson.py=utf-8
