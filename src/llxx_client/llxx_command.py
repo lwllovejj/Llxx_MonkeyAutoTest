@@ -37,13 +37,28 @@ class command:
     @abstractmethod
     def getAction(self):pass
 
+    '''
+    wait service return action result
+    '''
+    def priviteWaitParams(self, client_wrap):
+        issend = client_wrap.runCommand(self)
+        if issend == False:
+            return False
+        result = llxx_wait(client_wrap).waitForParams(self._command, 10)
+        if result != None and result['sucess']:
+            if 'params' in result.keys():
+                return result['params']
+            return True
+        return False
 '''
 click
 '''
 class ClickCommand(command):
     
-    def __init__(self):
+    def __init__(self, client_wrap):
         command.__init__(self)
+        self.client_wrap = client_wrap
+        
         self.CLICK_TYPE_BY_NONE = 0x00
         self.CLICK_TYPE_BY_ID = 0x01
         self.CLICK_TYPE_BY_NAME = 0x02
@@ -60,16 +75,27 @@ class ClickCommand(command):
     click by id
     '''
     def performClickById(self, idName):
-        self._command['clicktype'] = self.CLICK_TYPE_BY_ID
-        self._command['name'] = idName
+        self._params['clicktype'] = self.CLICK_TYPE_BY_ID
+        self._params['name'] = idName
+        self.priviteWaitParams(self.client_wrap)
         
     '''
     click by name
     '''
     def performClickByName(self, name):
-        self._command['clicktype'] = self.CLICK_TYPE_BY_NAME
-        self._command['name'] = name
-
+        self._params['clicktype'] = self.CLICK_TYPE_BY_NAME
+        self._params['name'] = name
+        return self.priviteWaitParams(self.client_wrap)
+    
+    '''
+    click by name index
+    '''
+    def performClickByNameIndex(self, name, index):
+        self._params['clicktype'] = self.CLICK_TYPE_BY_NAME_INDEX
+        self._params['name'] = name
+        self._params['index'] = index
+        return self.priviteWaitParams(self.client_wrap)
+    
 class RegPakcages(command):
     
     def __init__(self, client_wrap):

@@ -8,7 +8,6 @@ import os
 
 from llxx_client_wrap import llxx_client_wrap
 from llxx_command import ClickCommand
-from llxx_command import QueryCommand
 from llxx_wait import llxx_wait
 from llxx_command import RegPakcages
 
@@ -20,7 +19,7 @@ package.append("com.netease.newsreader.activity")
 print regpackages.regPackages(package)
 
 print "------------"
-click = ClickCommand()
+click = ClickCommand(client)
 
 package = "com.netease.newsreader.activity"
 
@@ -29,7 +28,8 @@ os.system("adb shell am start com.netease.newsreader.activity/com.netease.nr.biz
  
 # com.netease.newsreader.activity/com.netease.nr.phone.main.MainActivity
 # 等待主Activity启动
-waitActivity = llxx_wait(client);
-isMatch = waitActivity.waitForActivity("com.netease.nr.phone.main.MainActivity")
-if isMatch:
-    print "waitForActivity com.netease.nr.phone.main.MainActivity ok"
+
+print "等待主Activity启动: " + str(llxx_wait(client).waitForActivity("com.netease.nr.phone.main.MainActivity"))
+
+#点击 娱乐标签 
+print "点击 娱乐标签 : " + str(click.performClickByNameIndex("娱乐", 0))
