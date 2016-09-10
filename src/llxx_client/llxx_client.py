@@ -115,8 +115,11 @@ class llxx_client:
     send message to MonkeyRunner Service
     '''
     def sendToMonkeyRunner(self, msg):
-        self.socket_monkeyrunner.send(msg);
-        
+        try:
+            self.socket_monkeyrunner.send(msg);
+        except:
+            print "socket_monkeyrunner not connect"
+        print msg
     
     def sendToUiAnimator(self, msg):
         self.uiautomator_client.send(msg + "}")

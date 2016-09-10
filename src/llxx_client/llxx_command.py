@@ -27,6 +27,13 @@ class command:
         self._command['params'] = self._params
         return json.dumps(self._command, sort_keys=True) + "}"
     
+    '''
+    get command
+    '''
+    def getCommandNoApadd(self):
+        self._command['params'] = self._params
+        return json.dumps(self._command, sort_keys=True)
+    
     @abstractmethod
     def getAction(self):pass
 
@@ -84,7 +91,28 @@ class RegPakcages(command):
     def regPackages(self, packages):
         self._params['packages'] = packages
         return self.priviteWaitParams()
-        
+
+class TakeSnapshot(command):
+    
+    def __init__(self, client_wrap):
+        command.__init__(self)
+        self.client_wrap = client_wrap
+    
+    def getAction(self):
+        return "takephoto"
+
+    def priviteWaitParams(self):
+        self.client_wrap.runMonkeyCommand(self)
+        result = llxx_wait(self.client_wrap).waitForParams(self._command, 10)
+        if result != None and result['sucess']:
+            if 'params' in result.keys():
+                return result['params']
+            return True
+        return False
+    
+    def takeSnapshot(self, filepath):
+        self._params['filepath'] = filepath
+        return self.priviteWaitParams()
 '''
 query
 '''
