@@ -82,13 +82,13 @@ class llxx_client_wrap(llxx_client_listner):
     send message to Android Apk Service
     '''
     def sendToService(self, msg):
-        self._llxx_client.sendToService(msg)
+        return self._llxx_client.sendToService(msg)
         
     '''
     send message to MonkeyRunner Service
     '''
     def sendToMonkeyRunner(self, msg):
-        self._llxx_client.sendToMonkeyRunner(msg);
+        return self._llxx_client.sendToMonkeyRunner(msg);
         
     '''
     send message to Uianimator Service
@@ -97,10 +97,10 @@ class llxx_client_wrap(llxx_client_listner):
         self._llxx_client.sendToUiAnimator(msg)
     
     def runCommand(self, command):
-        self.sendToService(command.getCommand())
+        return self.sendToService(command.getCommand())
     
     def runMonkeyCommand(self, command):
-        self.sendToMonkeyRunner(command.getCommandNoApadd())
+        return self.sendToMonkeyRunner(command.getCommandNoApadd())
         
     def regMessageListner(self, listener):
         self.messageListeners.append(listener)

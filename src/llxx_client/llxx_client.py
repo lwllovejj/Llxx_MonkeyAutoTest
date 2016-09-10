@@ -22,6 +22,7 @@ class llxx_client_listner:
 class llxx_client:
     def __init__(self, listenerApkService , listenerMonkeyRunnerService):
         
+        self.DEBUG = False
         # 监听客户端的点击事件
         self.socket_listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket_listener.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
@@ -109,7 +110,14 @@ class llxx_client:
     send message to Android Apk Service
     '''
     def sendToService(self, msg):
-        self.socket_listener.sendall(msg)
+        try:
+            self.socket_listener.sendall(msg)
+        except:
+            print "socket_listener not connect"
+            if self.DEBUG:
+                print msg
+            return False
+        return True
         
     '''
     send message to MonkeyRunner Service
@@ -118,8 +126,11 @@ class llxx_client:
         try:
             self.socket_monkeyrunner.send(msg);
         except:
-            print "socket_monkeyrunner not connect"
-        print msg
+            print "monkeyrunner service is not start, please run : StartMonkeyService.py"
+            if self.DEBUG:
+                print msg
+            return False
+        return True
     
     def sendToUiAnimator(self, msg):
         self.uiautomator_client.send(msg + "}")
@@ -155,5 +166,5 @@ class llxx_client:
             t.setDaemon(True)
             t.start()
         except:
-            print "can`t connect 127.0.0.1:9999"
+            print "please start monkeyrunner service"
             self.socket_monkeyrunner_close = True

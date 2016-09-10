@@ -80,7 +80,9 @@ class RegPakcages(command):
         return "regPackage"
 
     def priviteWaitParams(self):
-        self.client_wrap.runCommand(self)
+        issend = self.client_wrap.runCommand(self)
+        if issend == False:
+            return False
         result = llxx_wait(self.client_wrap).waitForParams(self._command, 10)
         if result != None and result['sucess']:
             if 'params' in result.keys():
@@ -102,7 +104,9 @@ class TakeSnapshot(command):
         return "takesnapshot"
 
     def priviteWaitParams(self):
-        self.client_wrap.runMonkeyCommand(self)
+        issend = self.client_wrap.runMonkeyCommand(self)
+        if issend == False:
+            return False
         result = llxx_wait(self.client_wrap).waitForParams(self._command, 10)
         if result != None and result['sucess']:
             if 'params' in result.keys():
