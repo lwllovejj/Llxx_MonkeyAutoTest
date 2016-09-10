@@ -99,7 +99,7 @@ class TakeSnapshot(command):
         self.client_wrap = client_wrap
     
     def getAction(self):
-        return "takephoto"
+        return "takesnapshot"
 
     def priviteWaitParams(self):
         self.client_wrap.runMonkeyCommand(self)
