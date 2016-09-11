@@ -8,8 +8,11 @@ Created on 2016年8月26日
 from abc import abstractmethod
 import simplejson as json
 import os
+import time
 from llxx_wait import llxx_wait
 import types
+
+PHONE_WORKSPACE = "/sdcard/llxx/";
 
 class command:
     
@@ -50,6 +53,17 @@ class command:
                 return result['params']
             return True
         return False
+    
+    '''
+    
+    '''
+    def runShellCommand(self, command):
+        tmp = os.popen("adb shell " + command).readlines()
+        return tmp
+
+    def runSysCommand(self, command):
+        tmp = os.popen(command).readlines()
+        return tmp
 '''
 click
 '''
@@ -142,7 +156,11 @@ class TakeSnapshot(command):
     
     def takeSnapshot(self, filepath):
         self._params['filepath'] = filepath
-        return self.priviteWaitParams()
+        self.runShellCommand("mkdir -p " + PHONE_WORKSPACE + "/snap/")
+        filetemp = PHONE_WORKSPACE + "/snap/snap_" + str(time.time()) + ".png";
+        self.runShellCommand("screencap -p " + filetemp)
+        self.runSysCommand("adb pull " + filetemp + " " + filepath)
+        return os.path.isfile(filepath)
 '''
 query
 '''
@@ -329,7 +347,7 @@ class QueryCommand(command):
         self.findJsonNode(text, 'clickable', "true", lists)
         return lists
         
-##regPackage        
+# #regPackage        
         
 if __name__ == '__main__':
     click = ClickCommand()

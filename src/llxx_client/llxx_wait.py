@@ -31,20 +31,23 @@ class llxx_wait:
         message = None
         while True and (isMatch == False and timetotal < timeout):
             for msg in self.messageList:
-                target = json.JSONDecoder().decode(msg)
-                isMatch = True
-                # 遍历数组中的元素
-                for key in maps.keys():
-                    if key == 'params':
-                        continue
-                    
-                    if target[key] != maps[key]:
-                        isMatch = False
+                try:
+                    target = json.JSONDecoder().decode(msg)
+                    isMatch = True
+                    # 遍历数组中的元素
+                    for key in maps.keys():
+                        if key == 'params':
+                            continue
                         
-                if isMatch:
-                    message = target
-                    self.messageList.remove(msg)
-                    break;
+                        if target[key] != maps[key]:
+                            isMatch = False
+                            
+                    if isMatch:
+                        message = target
+                        self.messageList.remove(msg)
+                        break;
+                except:
+                    pass
             # print 'time pass' + str(timetotal)
             timetotal += 0.1
             time.sleep(0.1)
@@ -82,6 +85,9 @@ class llxx_wait:
         self._llxx_client_wrap.unRegMessageListener(self)
         return isMatch
     
+    def waitForTime(self, timeout):
+        time.sleep(timeout)
+        
     '''
     @return:  是否弹出了toast
     '''
