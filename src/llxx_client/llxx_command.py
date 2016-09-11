@@ -244,6 +244,62 @@ class Query(command):
         if result != None:
             return result
         return None
+
+
+SELECTOR_NIL = 0
+SELECTOR_TEXT = 1
+SELECTOR_START_TEXT = 2
+SELECTOR_CONTAINS_TEXT = 3
+SELECTOR_CLASS = 4
+SELECTOR_DESCRIPTION = 5
+SELECTOR_START_DESCRIPTION = 6
+SELECTOR_CONTAINS_DESCRIPTION = 7
+SELECTOR_INDEX = 8
+SELECTOR_INSTANCE = 9
+SELECTOR_ENABLED = 10
+SELECTOR_FOCUSED = 11
+SELECTOR_FOCUSABLE = 12
+SELECTOR_SCROLLABLE = 13
+SELECTOR_CLICKABLE = 14
+SELECTOR_CHECKED = 15
+SELECTOR_SELECTED = 16
+SELECTOR_ID = 17
+SELECTOR_PACKAGE_NAME = 18
+SELECTOR_CHILD = 19
+SELECTOR_CONTAINER = 20
+SELECTOR_PATTERN = 21
+SELECTOR_PARENT = 22
+SELECTOR_COUNT = 23
+SELECTOR_LONG_CLICKABLE = 24
+SELECTOR_TEXT_REGEX = 25
+SELECTOR_CLASS_REGEX = 26
+SELECTOR_DESCRIPTION_REGEX = 27
+SELECTOR_PACKAGE_NAME_REGEX = 28
+SELECTOR_RESOURCE_ID = 29
+SELECTOR_CHECKABLE = 30
+SELECTOR_RESOURCE_ID_REGEX = 31
+class UiSelectQuery(command):
+    
+    def __init__(self, client_wrap):
+        command.__init__(self)
+        self.client_wrap = client_wrap
+        self._select = {}
+
+    
+    def getAction(self):
+        return "queryAccessibility"
+    
+    def query(self):
+        self._params['select'] = self._select
+        result = self.priviteWaitParams(self.client_wrap)
+        
+        if result != None:
+            return result
+        return None
+    
+    def className(self, classname):
+        self._select[str(SELECTOR_CLASS)] = classname
+        return self
 '''
 query
 '''
