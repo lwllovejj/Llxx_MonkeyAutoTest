@@ -161,6 +161,20 @@ class TakeSnapshot(command):
         self.runShellCommand("screencap -p " + filetemp)
         self.runSysCommand("adb pull " + filetemp + " " + filepath)
         return os.path.isfile(filepath)
+    
+'''
+operation
+'''
+class SysOperation(command):
+    def __init__(self):
+        command.__init__(self)
+        
+    def reboot(self):
+        self.runSysCommand("adb reboot")
+    
+    def watchprops(self):
+        self.runShellCommand("watchprops")
+    
 '''
 query
 '''

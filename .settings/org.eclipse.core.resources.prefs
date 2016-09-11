@@ -3,6 +3,7 @@ encoding//src/appium/appium_test_llxx_service.py=utf-8
 encoding//src/demos/llxx_wangyi_test.py=utf-8
 encoding//src/demos/llxx_z_query.py=utf-8
 encoding//src/demos/llxx_z_reg.py=utf-8
+encoding//src/demos/llxx_z_sysoperation.py=utf-8
 encoding//src/demos/llxx_z_takesnapshot.py=utf-8
 encoding//src/demos/llxx_z_test_query.py=utf-8
 encoding//src/demos/llxx_z_test_uiautomator.py=utf-8
