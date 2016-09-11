@@ -31,6 +31,7 @@ os.system("adb shell am start com.netease.newsreader.activity/com.netease.nr.biz
 
 print "等待主Activity启动: " + str(llxx_wait(client).waitForActivity("com.netease.nr.phone.main.MainActivity"))
 
+llxx_wait(client).waitForTime(2)
 #点击 娱乐标签 
 print "点击 娱乐标签 : " + str(ClickCommand(client).performClickByNameIndex("娱乐", 0))
 

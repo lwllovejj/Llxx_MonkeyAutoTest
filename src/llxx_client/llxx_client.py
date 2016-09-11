@@ -144,7 +144,7 @@ class llxx_client:
             t.setDaemon(True)
             t.start()
         except:
-            print "can`t connect 127.0.0.1:8082"
+            #print "can`t connect 127.0.0.1:8082"
             self.socket_service_close = True
             
         try:
@@ -155,7 +155,7 @@ class llxx_client:
             t.setDaemon(True)
             t.start()
         except:
-            print "can`t connect 127.0.0.1:8083"
+            #print "can`t connect 127.0.0.1:8083"
             self.socket_uiautomator_close = True
             
         try:
@@ -166,5 +166,5 @@ class llxx_client:
             t.setDaemon(True)
             t.start()
         except:
-            print "please start monkeyrunner service"
+            #print "can`t connect 127.0.0.1:9999"
             self.socket_monkeyrunner_close = True
