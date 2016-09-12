@@ -1,6 +1,7 @@
 eclipse.preferences.version=1
 encoding//src/appium/appium_test_llxx_service.py=utf-8
 encoding//src/demos/llxx_wangyi_test.py=utf-8
+encoding//src/demos/llxx_z_apptest.py=utf-8
 encoding//src/demos/llxx_z_node_select.py=utf-8
 encoding//src/demos/llxx_z_query.py=utf-8
 encoding//src/demos/llxx_z_reg.py=utf-8
@@ -13,6 +14,8 @@ encoding//src/demos/llxx_z_waitmessage.py=utf-8
 encoding//src/dump/dumpsnap.py=utf-8
 encoding//src/dump/jsonformat.py=utf-8
 encoding//src/dump/xmltoJson.py=utf-8
+encoding//src/llxx_app/llxx_app.py=utf-8
+encoding//src/llxx_app/llxx_setuperror.py=utf-8
 encoding//src/llxx_client/__init__.py=utf-8
 encoding//src/llxx_client/llxx_client.py=utf-8
 encoding//src/llxx_client/llxx_client_wrap.py=utf-8
