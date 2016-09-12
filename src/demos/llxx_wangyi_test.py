@@ -54,11 +54,13 @@ if listview != None:
         print "adb shell input swipe " + listbound.centerTopToBottom()
         os.system("adb shell input swipe " + listbound.centerTopToBottom())
         time.sleep(5)
-        
+        duration = 100
         while True:
             ## print takeSnapshot.takeSnapshot(currendir + "//snapshot_yule" + str(time.time()) +".png")
-            print "adb shell input swipe" + " " + listbound.centerBottomToTop()
-            os.system("adb shell input swipe" + " " + listbound.centerBottomToTop())
+            cmd = "adb shell input swipe" + " " + listbound.centerBottomToTop() + " " + str(duration)
+            print cmd
+            os.system(cmd)
             time.sleep(1)
+            #duration += 50
             
         
