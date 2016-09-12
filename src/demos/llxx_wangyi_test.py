@@ -13,6 +13,7 @@ from llxx_wait import llxx_wait
 from llxx_command import RegPakcages
 from llxx_command import TakeSnapshot
 from llxx_command import UiSelectQuery
+from llxx_node import bounds
 
 client = llxx_client_wrap()
 
@@ -44,38 +45,19 @@ currendir = os.getcwd()
 print takeSnapshot.takeSnapshot(currendir + "//snapshot_yule.png")
 
 
-# ##
-class bounds:
-    def __init__(self, boundsStr):
-        repStr = boundsStr.replace("][", ",").replace("[", "").replace("]", "");
-        result = repStr.split(",")
-        self._left = result[0]
-        self._top = result[1]
-        self._right = result[2]
-        self._bottom = result[3]
-    
-    def left(self):
-        return self._left
-    
-    def top(self):
-        return self._top
-    
-    def right(self):
-        return self._right
-    
-    def bottom(self):
-        return self._bottom
-    
 query = UiSelectQuery(client)
 listview = query.className("android.widget.ListView").query()
 if listview != None:
     print listview
     if listview['isfind']:
         listbound = bounds(listview['node']['bounds'])
-        print "adb shell input swipe " + listbound.left() + " " + listbound.top() + " " + listbound.right() + " " + listbound.bottom()
-        os.system("adb shell input swipe " + listbound.left() + " " + listbound.top() + " " + listbound.right() + " " + listbound.bottom())
+        print "adb shell input swipe " + listbound.centerTopToBottom()
+        os.system("adb shell input swipe " + listbound.centerTopToBottom())
         time.sleep(5)
         
-        print "adb shell input swipe" + " " + listbound.right() + " " + listbound.bottom()  + " "+ listbound.left() + " " + listbound.top()
-        os.system("adb shell input swipe" + " " + listbound.right() + " " + listbound.bottom()  + " "+ listbound.left() + " " + listbound.top())
-        time.sleep(5)
+        while True:
+            print "adb shell input swipe" + " " + listbound.centerBottomToTop()
+            os.system("adb shell input swipe" + " " + listbound.centerBottomToTop())
+            time.sleep(1)
+            
+        
