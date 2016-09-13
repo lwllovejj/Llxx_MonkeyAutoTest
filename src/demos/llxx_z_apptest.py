@@ -11,5 +11,7 @@ app = llxx_app("com.netease.newsreader.activity")
 ## 添加测试单元
 app.addTestUnits(PlugUnit())
 
+app.addTestPlugs("testlistview")
+
 ## 开始测试
 app.run()

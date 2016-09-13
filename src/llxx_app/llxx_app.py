@@ -42,6 +42,9 @@ class llxx_app:
     def addTestUnits(self, unit):
         self._defgroup.addTestUnits(unit)
     
+    def addTestPlugs(self, name):
+        self._defgroup.addTestPlugs(name)
+    
     '''
     
     '''
