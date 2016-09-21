@@ -33,6 +33,12 @@ class bounds:
     def centerBottomToTop(self):
         return " " + str(self.centerX()) + " " + str(self.bottom() - 10) + " " + str(self.centerX()) + " " + str(self.top())
     
+    def centerLeftToRight(self):
+        return " " + str(self.left() + 10) + " " + str(self.centerY()) + " " + str(self.right()) + " " + str(self.centerY())
+    
+    def centerRightToLeft(self):
+        return " " + str(self.right() - 10) + " " + str(self.centerY()) + " " + str(self.left()) + " " + str(self.centerY())
+    
     def centerX(self):
         return (self.left() + self.right()) / 2
     
