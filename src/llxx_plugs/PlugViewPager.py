@@ -22,7 +22,8 @@ class PlugTestViewparger(PlugUnit):
         print "test view pager"
         query = UiSelectQuery(llxx_client)
         listview = query.className("android.support.v4.view.ViewPager").query()
-        if listview != None:
+        print listview
+        if listview != True and listview != None:
             print listview
             if listview['isfind']:
                 listbound = bounds(listview['node']['bounds'])
@@ -36,5 +37,6 @@ class PlugTestViewparger(PlugUnit):
                     count += 1
                     #duration += 50
                 print "test list view end"
-        
+        else:
+            print "not found android.support.v4.view.ViewPager"
         
