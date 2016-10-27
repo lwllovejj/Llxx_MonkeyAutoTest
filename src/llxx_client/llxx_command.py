@@ -28,7 +28,7 @@ class command:
     '''
     def getCommand(self):
         self._command['params'] = self._params
-        return json.dumps(self._command, sort_keys=True) + "}"
+        return json.dumps(self._command, sort_keys=True)
     
     '''
     get command

@@ -7,6 +7,9 @@ Created on 2016年8月21日
 
 from abc import abstractmethod
 
+#from __future__ import print_function
+from websocket import create_connection
+
 import socket
 import threading
 class llxx_client_listner:
@@ -24,10 +27,6 @@ class llxx_client:
         
         self.DEBUG = False
         # 监听客户端的点击事件
-        self.socket_listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket_listener.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
-        self.socket_listener.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 30 * 1024 * 2)
-        self.socket_listener.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 30 * 1024 * 2)
         
         self.uiautomator_client = socket.socket()
         self.uiautomator_client.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
@@ -55,15 +54,10 @@ class llxx_client:
         print "_listener start"
         
         # BUG 这里的分段1057 需要严格测试
-        dataAll = ""
         while(True):
             try:
-                data = self.socket_listener.recv(1024)  # 阻塞线程，接受消息
-                dataAll = dataAll + data
-                if(data.__sizeof__() != 1057):
-                    # print "_listener receive->" + data
-                    self.listener_apk_service(dataAll)
-                    dataAll = ""
+                data = self.socket_listener.recv()  # 阻塞线程，接受消息
+                self.listener_apk_service(data)
             except Exception, e:
                 if str(e).strip() == "[Errno 10053]":
                     self.socket_service_close = True
@@ -111,7 +105,7 @@ class llxx_client:
     '''
     def sendToService(self, msg):
         try:
-            self.socket_listener.sendall(msg)
+            self.socket_listener.send(msg)
         except:
             print "socket_listener not connect"
             if self.DEBUG:
@@ -138,7 +132,7 @@ class llxx_client:
     def _start(self):
         try:
             # 调用connect 连接本地(127.0.0.1) 的8082端口
-            self.socket_listener.connect(("127.0.0.1", 8082))
+            self.socket_listener = create_connection("ws://127.0.0.1:8082/")
             # 开始连接
             t = threading.Thread(target=self._listener, args=())
             t.setDaemon(True)
