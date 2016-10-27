@@ -10,7 +10,7 @@ from llxx_client_wrap import llxx_client_wrap
 from llxx_app_context import llxx_app_context
 from llxx_setuperror import Llxx_SetupError
 from llxx_command import RegPakcages
-from llxx_command import AmOperation
+from llxx_command import AmCommand
 from llxx_pluggroup import PlugGroup
 
 class llxx_app:
@@ -45,8 +45,8 @@ class llxx_app:
     ## App Utils
     ## ========================================================    
     def startApp(self):
-        am = AmOperation()
-        am.startApp(self._package)
+        am = AmCommand(self._client)
+        return am.startApp(self._package)
     
     ## ========================================================
     ## Test 

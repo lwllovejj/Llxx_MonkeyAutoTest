@@ -8,7 +8,8 @@ from llxx_app import llxx_app
 from llxx_plugunit import PlugUnit
 app = llxx_app("com.cloudd.user")
 
-app.startApp()
+isStartApp = app.startApp()
+print "start app sucess : " + str(isStartApp)
 activitys = app.getContext().allActivity()['activitys']
 for activity in activitys:
     print activity

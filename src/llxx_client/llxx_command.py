@@ -167,7 +167,8 @@ operation
 class AmOperation(command):
     def __init__(self):
         command.__init__(self)
-        self._debug = True
+        self._debug = False
+        
     def startApp(self, package):
         command = "adb shell am start " + str(package)
         
@@ -188,6 +189,27 @@ class SysOperation(command):
     
     def watchprops(self):
         self.runShellCommand("watchprops")
+        
+'''
+query
+'''
+class AmCommand(command):
+    
+    def __init__(self, client_wrap):
+        command.__init__(self)
+        self.client_wrap = client_wrap
+        
+    
+    def getAction(self):
+        return "am"
+    
+    '''
+    start app 
+    '''
+    def startApp(self, pacakge):
+        self._command['type'] = 'start_app'
+        self._command['packagename'] = pacakge
+        return self.priviteWaitParams(self.client_wrap)
     
 '''
 query
