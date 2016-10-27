@@ -161,7 +161,21 @@ class TakeSnapshot(command):
         self.runShellCommand("screencap -p " + filetemp)
         self.runSysCommand("adb pull " + filetemp + " " + filepath)
         return os.path.isfile(filepath)
-    
+'''
+operation
+'''
+class AmOperation(command):
+    def __init__(self):
+        command.__init__(self)
+        self._debug = True
+    def startApp(self, package):
+        command = "adb shell am start " + str(package)
+        
+        if self._debug :
+            print command
+            
+        self.runSysCommand(command)
+
 '''
 operation
 '''

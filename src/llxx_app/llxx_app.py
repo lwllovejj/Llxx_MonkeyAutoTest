@@ -7,8 +7,10 @@ Created on 2016年9月12日
 '''
 
 from llxx_client_wrap import llxx_client_wrap
+from llxx_app_context import llxx_app_context
 from llxx_setuperror import Llxx_SetupError
 from llxx_command import RegPakcages
+from llxx_command import AmOperation
 from llxx_pluggroup import PlugGroup
 
 class llxx_app:
@@ -16,7 +18,10 @@ class llxx_app:
     _pluggroups = []
     def __init__(self, package):
         self._client = llxx_client_wrap()
+        self._package = package
         self._regapp = False
+        
+        self._context = llxx_app_context(self._client, self._package)
         
         self._defgroup = PlugGroup(self._client)
         self._pluggroups.append(self._defgroup)
@@ -31,6 +36,22 @@ class llxx_app:
             raise Llxx_SetupError("reg test package error")
     
     '''
+    get TestApplication Context
+    '''
+    def getContext(self):
+        return self._context
+    
+    ## ========================================================
+    ## App Utils
+    ## ========================================================    
+    def startApp(self):
+        am = AmOperation()
+        am.startApp(self._package)
+    
+    ## ========================================================
+    ## Test 
+    ## ========================================================
+    '''
     add test group
     '''
     def addTestGroup(self, group):
@@ -44,9 +65,8 @@ class llxx_app:
     
     def addTestPlugs(self, name):
         self._defgroup.addTestPlugs(name)
-    
+        
     '''
-    
     '''
     def run(self):
         for group in self._pluggroups:
