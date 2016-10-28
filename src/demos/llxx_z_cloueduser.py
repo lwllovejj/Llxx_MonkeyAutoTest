@@ -8,7 +8,12 @@ import time
 
 from llxx_app import llxx_app
 from llxx_plugunit import PlugUnit
+
+from llxx_monitorupdate import llxx_monitorupdate
+
 app = llxx_app("com.cloudd.user")
+
+app.addMonitorUnit(llxx_monitorupdate())
 
 # 重启APP并且等待主Activity启动时间
 isStartApp = app.restartApp()
@@ -35,4 +40,3 @@ app.addTestUnits(PlugUnit())
 
 ## 开始测试
 app.run()
-time.sleep(60)

@@ -47,7 +47,7 @@ class llxx_client:
         self.socket_monkeyrunner_close = False
         self.socket_uiautomator_close = False
         
-        self._debug_data_recv = True
+        self._debug_data_recv = False
         
     def _setuiautomator_listtener(self, uiautomator_listtener):
         self.uiautomator_listtener = uiautomator_listtener

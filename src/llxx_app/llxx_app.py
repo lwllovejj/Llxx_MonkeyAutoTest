@@ -15,6 +15,7 @@ from llxx_command import AmOperation
 from llxx_pluggroup import PlugGroup
 
 from llxx_wait import llxx_wait
+from llxx_monitor import llxx_monitor
 
 
 class llxx_app:
@@ -24,6 +25,8 @@ class llxx_app:
         self._client = llxx_client_wrap()
         self._package = package
         self._regapp = False
+        
+        self._monitor = llxx_monitor(self._client)
         
         self._context = llxx_app_context(self._client, self._package)
         
@@ -63,6 +66,20 @@ class llxx_app:
     def waitingActivity(self, activityname):
         return llxx_wait(self._client).waitForActivity(activityname)
     
+    ## ========================================================
+    ## Test 
+    ## ========================================================
+    '''
+    add monitor
+    '''
+    def addMonitorUnit(self, unit):
+        self._monitor.addMonitorUnit(unit)
+        
+    '''
+    remove monitor
+    '''
+    def removeMonitorUnit(self, unit):
+        self._monitor.removeMonitoUnit(unit)
     ## ========================================================
     ## Test 
     ## ========================================================
