@@ -10,10 +10,17 @@ from llxx_app import llxx_app
 from llxx_plugunit import PlugUnit
 
 from llxx_monitorupdate import llxx_monitorupdate
+from llxx_monitor import llxx_monitorunit_listener
 
 app = llxx_app("com.cloudd.user")
 
-app.addMonitorUnit(llxx_monitorupdate())
+class AppMonitorListener(llxx_monitorunit_listener):
+    def hook(self, llxx_result):
+        print llxx_result.getMessage()
+        print llxx_result.getType()
+        print llxx_result.getParams()
+        
+app.addMonitorUnit(llxx_monitorupdate(AppMonitorListener()))
 
 # 重启APP并且等待主Activity启动时间
 isStartApp = app.restartApp()
