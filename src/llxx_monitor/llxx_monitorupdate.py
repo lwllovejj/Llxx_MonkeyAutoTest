@@ -14,7 +14,7 @@ import string
 class llxx_monitorupdate(llxx_monitorunit):  
     
     def onMonitor(self, message):
-        isHasUpate = string.find(message, "发现新版本，是否升级？") != -1
+        isHasUpate = string.find(message, "发现新版本，是否升级？") != -1 and string.find(message, "start_dialog") != -1
         if isHasUpate:
             print "发现新版本，是否升级？"
             # print message
