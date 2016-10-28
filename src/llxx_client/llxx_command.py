@@ -11,6 +11,7 @@ import os
 import time
 from llxx_wait import llxx_wait
 import types
+from __builtin__ import str
 
 PHONE_WORKSPACE = "/sdcard/llxx/";
 
@@ -177,6 +178,12 @@ class AmOperation(command):
             
         self.runSysCommand(command)
 
+    '''
+    force stop app 
+    '''
+    def stopApp(self, package):
+        #os.system("adb shell am force-stop com.netease.newsreader.activity")
+        self.runShellCommand("am force-stop " + str(package))
 '''
 operation
 '''

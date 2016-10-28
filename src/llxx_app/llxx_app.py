@@ -1,6 +1,6 @@
 # --*coding:utf-8*--
 '''
-Created on 2016年9月12日
+Created on 2016年10月28日
 
 @author: fanxin, eachen
 @summary: 封装单 APP 测试
@@ -11,7 +11,11 @@ from llxx_app_context import llxx_app_context
 from llxx_setuperror import Llxx_SetupError
 from llxx_command import RegPakcages
 from llxx_command import AmCommand
+from llxx_command import AmOperation
 from llxx_pluggroup import PlugGroup
+
+from llxx_wait import llxx_wait
+
 
 class llxx_app:
     
@@ -47,6 +51,17 @@ class llxx_app:
     def startApp(self):
         am = AmCommand(self._client)
         return am.startApp(self._package)
+    
+    def stopApp(self):
+        am = AmOperation()
+        am.stopApp(self._package)
+    
+    def restartApp(self):
+        self.stopApp()
+        return self.startApp()
+        
+    def waitingActivity(self, activityname):
+        return llxx_wait(self._client).waitForActivity(activityname)
     
     ## ========================================================
     ## Test 

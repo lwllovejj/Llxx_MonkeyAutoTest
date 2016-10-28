@@ -8,6 +8,7 @@ Created on 2016年10月27日
 
 from llxx_client_wrap import llxx_client_wrap
 from llxx_command import Query
+from llxx_command import QueryCommand
 
 class llxx_app_context:
     

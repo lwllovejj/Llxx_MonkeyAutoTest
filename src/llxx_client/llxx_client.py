@@ -47,6 +47,8 @@ class llxx_client:
         self.socket_monkeyrunner_close = False
         self.socket_uiautomator_close = False
         
+        self._debug_data_recv = True
+        
     def _setuiautomator_listtener(self, uiautomator_listtener):
         self.uiautomator_listtener = uiautomator_listtener
         
@@ -57,6 +59,8 @@ class llxx_client:
         while(True):
             try:
                 data = self.socket_listener.recv()  # 阻塞线程，接受消息
+                if self._debug_data_recv:
+                    print data
                 self.listener_apk_service(data)
             except Exception, e:
                 if str(e).strip() == "[Errno 10053]":
