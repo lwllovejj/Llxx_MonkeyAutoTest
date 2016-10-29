@@ -6,9 +6,15 @@ Created on 2016年10月28日
 '''
 # pip install simplejson
 from llxx_client_wrap import llxx_client_wrap
+
+import simplejson as json
+
 import time
 
 import threading
+import string
+
+import types
 
 class llxx_monitor:
     
@@ -41,13 +47,13 @@ class llxx_monitor:
             pass_message = []
             for msg in self.messageList:
                 for monitor_unit in self.monitorunits:
-                    try:
+                    #try:
                         monitor_unit.onMonitor(msg)
                         pass_message.append(msg)
                         if self._debug:
                             print msg
-                    except Exception,ex:
-                        print Exception,":",ex
+                    #except Exception,ex:
+                    #    print Exception,":",ex
 
             # print 'time pass' + str(timetotal)
             for msg in pass_message:
@@ -114,7 +120,32 @@ class llxx_monitorunit:
     
     def hookApp(self , llxx_result ):
         self._llxx_monitorunit_listener.hook(llxx_result)
-
+    
+    def findNode(self, jsonTarget, text):
+        node = None
+        if type(jsonTarget) == types.DictType:
+            _temtext = jsonTarget["text"].encode('utf-8')
+            if string.find(_temtext, text) != -1:
+                node = jsonTarget
+                return node
+    
+            if node == None and "node" in jsonTarget and jsonTarget["node"] != None:
+                node = self.findNode(jsonTarget["node"], text)
+                if node != None:
+                    return node
+        
+        if type(jsonTarget) == types.ListType:
+            for jsontemp in jsonTarget:
+                node = self.findNode(jsontemp, text)
+                if node != None:
+                    return node
+        return node
+        pass
+    
+    def findTextNode(self, msg, text):
+        target = json.JSONDecoder().decode(msg)
+        return self.findNode(target["params"], text)
+        
 if __name__ == '__main__':
     monitor = llxx_monitor(llxx_client_wrap())
     

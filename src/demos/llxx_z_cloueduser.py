@@ -12,13 +12,23 @@ from llxx_plugunit import PlugUnit
 from llxx_monitorupdate import llxx_monitorupdate
 from llxx_monitor import llxx_monitorunit_listener
 
+from llxx_command import ClickCommand
+
 app = llxx_app("com.cloudd.user")
 
 class AppMonitorListener(llxx_monitorunit_listener):
+    
     def hook(self, llxx_result):
-        print llxx_result.getMessage()
-        print llxx_result.getType()
-        print llxx_result.getParams()
+        #print llxx_result.getMessage()
+        #print llxx_result.getType()
+        #print llxx_result.getParams()
+        if llxx_result.getType() == "update_dialog":
+            print "弹出升级提示，点击确定开始下载任务"
+            performClick = ClickCommand(app._client)
+            performClick.performClickByName("确定")
+        if llxx_result.getType() == "update_dowload_process":
+            #print llxx_result.getParams()
+            print llxx_result.getParams()["text"]
         
 app.addMonitorUnit(llxx_monitorupdate(AppMonitorListener()))
 
@@ -42,8 +52,8 @@ else:
 # for activity in activitys:
 #     print activity
 
-## 添加测试单元
+# # 添加测试单元
 app.addTestUnits(PlugUnit())
 
-## 开始测试
+# # 开始测试
 app.run()
