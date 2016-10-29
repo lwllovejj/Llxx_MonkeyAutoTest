@@ -15,10 +15,11 @@ import threading
 import string
 
 import types
+import Queue
 
 class llxx_monitor:
     
-    messageList = [] 
+    messageList = Queue.Queue()
     monitorunits = []
     def __init__(self, llxx_client_wrap):
         self._llxx_client_wrap = llxx_client_wrap
@@ -32,7 +33,7 @@ class llxx_monitor:
     
     def onMessage(self, message):
         if message.strip() != "":
-            self.messageList.append(message)
+            self.messageList.put(message)
         # print "llxx_wait onMessage ->" + message
     
         # # 等待指定的数据
@@ -44,24 +45,16 @@ class llxx_monitor:
         self._llxx_client_wrap.regMessageListner(self)
         message = None
         while self._start:
-            pass_message = []
-            for msg in self.messageList:
-                for monitor_unit in self.monitorunits:
-                    #try:
-                        monitor_unit.onMonitor(msg)
-                        pass_message.append(msg)
-                        if self._debug:
-                            print msg
-                    #except Exception,ex:
-                    #    print Exception,":",ex
-
-            # print 'time pass' + str(timetotal)
-            for msg in pass_message:
+            msg = self.messageList.get(True, None)
+            print msg
+            for monitor_unit in self.monitorunits:
                 try:
-                    self.messageList.remove(msg)
-                except:
-                    pass
-            time.sleep(0.2)
+                    monitor_unit.onMonitor(msg)
+                    if self._debug:
+                        print msg
+                except Exception,ex:
+                    print Exception,":",ex
+
         self._llxx_client_wrap.unRegMessageListener(self)
         return message
     
