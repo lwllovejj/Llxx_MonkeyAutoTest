@@ -14,6 +14,7 @@ from llxx_monitor import llxx_monitorunit, llxx_result
 
 class llxx_monitorinstall(llxx_monitorunit):  
     
+    _isinstallok = False
     def onMonitor(self, message):
         isInstall = string.find(message, "start_activity") != -1 and string.find(message, "com.android.packageinstaller.PackageInstallerActivity") != -1
         if isInstall:
@@ -22,10 +23,11 @@ class llxx_monitorinstall(llxx_monitorunit):
             # print message
         
         ## 安装完成
-        isInstallOk = string.find(message, "start_activity") != -1 and string.find(message, "安装完成") != -1 and string.find(message, "打开")
-        if isInstallOk:
+        isInstallOk = string.find(message, "安装完成") != -1 and string.find(message, "打开")
+        if isInstallOk and self._isinstallok != True:
             params = {};
             params["sucess"] = True
             self.hookApp(llxx_result(message, "apk_install_report", params))
+            self._isinstallok = True
             # print message
             
