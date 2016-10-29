@@ -13,6 +13,7 @@ from llxx_monitorupdate import llxx_monitorupdate
 from llxx_monitor import llxx_monitorunit_listener
 
 from llxx_command import ClickCommand
+from llxx_monitorinstall import llxx_monitorinstall
 
 app = llxx_app("com.cloudd.user")
 
@@ -26,11 +27,18 @@ class AppMonitorListener(llxx_monitorunit_listener):
             print "弹出升级提示，点击确定开始下载任务"
             performClick = ClickCommand(app._client)
             performClick.performClickByName("确定")
+            
         if llxx_result.getType() == "update_dowload_process":
             #print llxx_result.getParams()
             print llxx_result.getParams()["text"]
+            
+        if llxx_result.getType() == "apk_install":
+            print "准备安装程序"
+            performClick = ClickCommand(app._client)
+            performClick.performClickByName("取消")
         
 app.addMonitorUnit(llxx_monitorupdate(AppMonitorListener()))
+app.addMonitorUnit(llxx_monitorinstall(AppMonitorListener()))
 
 # 重启APP并且等待主Activity启动时间
 isStartApp = app.restartApp()

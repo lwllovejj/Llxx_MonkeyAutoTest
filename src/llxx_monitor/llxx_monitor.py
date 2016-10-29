@@ -57,8 +57,10 @@ class llxx_monitor:
 
             # print 'time pass' + str(timetotal)
             for msg in pass_message:
-                self.messageList.remove(msg)
-                
+                try:
+                    self.messageList.remove(msg)
+                except:
+                    pass
             time.sleep(0.2)
         self._llxx_client_wrap.unRegMessageListener(self)
         return message
