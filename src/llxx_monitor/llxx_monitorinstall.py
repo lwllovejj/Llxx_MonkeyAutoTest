@@ -20,5 +20,12 @@ class llxx_monitorinstall(llxx_monitorunit):
             params = {};
             self.hookApp(llxx_result(message, "apk_install", params))
             # print message
+        
+        ## 安装完成
+        isInstallOk = string.find(message, "start_activity") != -1 and string.find(message, "安装完成") != -1 and string.find(message, "打开")
+        if isInstallOk:
+            params = {};
+            params["sucess"] = True
+            self.hookApp(llxx_result(message, "apk_install_report", params))
+            # print message
             
-    

@@ -12,7 +12,7 @@ from llxx_plugunit import PlugUnit
 from llxx_monitorupdate import llxx_monitorupdate
 from llxx_monitor import llxx_monitorunit_listener
 
-from llxx_command import ClickCommand
+from llxx_command import ClickCommand, TakeSnapshot
 from llxx_monitorinstall import llxx_monitorinstall
 
 app = llxx_app("com.cloudd.user")
@@ -23,7 +23,13 @@ class AppMonitorListener(llxx_monitorunit_listener):
         #print llxx_result.getMessage()
         #print llxx_result.getType()
         #print llxx_result.getParams()
+        
+        #########################################################################
+        # 升级相关
+        #########################################################################
         if llxx_result.getType() == "update_dialog":
+            snapshot= TakeSnapshot(app._client)
+            snapshot.takeSnapshot("snapshot_update_dialog.png")
             print "弹出升级提示，点击确定开始下载任务"
             performClick = ClickCommand(app._client)
             performClick.performClickByName("确定")
@@ -33,10 +39,26 @@ class AppMonitorListener(llxx_monitorunit_listener):
             print llxx_result.getParams()["text"]
             
         if llxx_result.getType() == "apk_install":
+            snapshot  = TakeSnapshot(app._client)
+            snapshot.takeSnapshot("snapshot_update_install.png")
             print "准备安装程序"
             performClick = ClickCommand(app._client)
-            performClick.performClickByName("取消")
+            #performClick.performClickByName("取消")
+            performClick.performClickByName("安装")
+            
+        if llxx_result.getType() == "apk_install_report":
+            snapshot  = TakeSnapshot(app._client)
+            snapshot.takeSnapshot("snapshot_update_install_report.png")
+            
+            if llxx_result.getParams()["sucess"]:
+                print "安装完成，打开程序"
+                performClick = ClickCommand(app._client)
+                #performClick.performClickByName("取消")
+                performClick.performClickByName("打开")
         
+        #########################################################################
+        #
+        #########################################################################
 app.addMonitorUnit(llxx_monitorupdate(AppMonitorListener()))
 app.addMonitorUnit(llxx_monitorinstall(AppMonitorListener()))
 
