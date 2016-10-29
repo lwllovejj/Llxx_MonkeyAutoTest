@@ -17,14 +17,18 @@ from llxx_pluggroup import PlugGroup
 from llxx_wait import llxx_wait
 from llxx_monitor import llxx_monitor
 
-
+import time
 class llxx_app:
     
     _pluggroups = []
     def __init__(self, package):
-        self._client = llxx_client_wrap()
         self._package = package
         self._regapp = False
+        
+        self.stopApp()
+        time.sleep(2)
+        
+        self._client = llxx_client_wrap()
         
         self._monitor = llxx_monitor(self._client)
         

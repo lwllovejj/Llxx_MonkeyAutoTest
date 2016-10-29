@@ -4,7 +4,6 @@ Created on 2016年10月27日
 
 @author: fanxin, eachen
 '''
-import time
 
 from llxx_app import llxx_app
 from llxx_plugunit import PlugUnit
@@ -13,7 +12,7 @@ from llxx_monitorupdate import llxx_monitorupdate
 from llxx_monitor import llxx_monitorunit_listener
 
 from llxx_command import ClickCommand, TakeSnapshot
-from llxx_monitorinstall import llxx_monitorinstall
+from llxx_z_cloueduser_monitor import llxx_monitor_dialog
 
 app = llxx_app("com.cloudd.user")
 
@@ -58,6 +57,7 @@ class AppMonitorListener(llxx_monitorunit_listener):
         #
         #########################################################################
 app.addMonitorUnit(llxx_monitorupdate(AppMonitorListener()))
+app.addMonitorUnit(llxx_monitor_dialog(AppMonitorListener()))
 
 # 重启APP并且等待主Activity启动时间
 isStartApp = app.restartApp()

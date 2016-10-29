@@ -16,6 +16,7 @@ import string
 
 import types
 import Queue
+from datetime import datetime
 
 class llxx_monitor:
     
@@ -44,17 +45,53 @@ class llxx_monitor:
     def monitor(self):
         self._llxx_client_wrap.regMessageListner(self)
         message = None
+        
+        starttime = datetime.now()
         while self._start:
-            msg = self.messageList.get(True, None)
+            try:
+                msg = self.messageList.get(True, 2)
+                
+            except Exception,ex:
+                pass
+                
+            endtime = datetime.now()
+            # print "units size = " + str(len(self.monitorunits))
+            # 配置开始和结束至少30ms以上
+            if len(self.monitorunits) == 0 and (endtime - starttime).seconds > 30:
+                print "----> no units, monitor now stop"
+                self._start = False
+                break
+            
+            if msg == None:
+                continue
+            
             #print msg
+            timeoutunits = []
             for monitor_unit in self.monitorunits:
                 try:
-                    monitor_unit.onMonitor(msg)
+                    ### 不处理已经超时的模块
+                    if monitor_unit.isTimeOut():
+                        timeoutunits.append(monitor_unit)
+                    
+                    ### 只处理没有超时的模块
+                    else:
+                        monitor_unit.onMonitor(msg)
+                    
+                    ### FOR DEBUG
                     if self._debug:
                         print msg
+                        
                 except Exception,ex:
                     print Exception,":",ex
-
+                    
+            ### 移除已经超时的模块
+            for monitor_unit in timeoutunits:
+                try:
+                    self.monitorunits.remove(monitor_unit)
+                    
+                except Exception,ex:
+                    print Exception,":",ex
+            
         self._llxx_client_wrap.unRegMessageListener(self)
         return message
     
@@ -108,6 +145,8 @@ class llxx_result:
     
 class llxx_monitorunit:  
     
+    starttime = datetime.now()      # 开始时间，会在初始化的时候自动设置
+    timeout = 30                    # 超时时间默认设置为60ms，如果60没有等待到的话就自动被移除了
     def __init__(self, llxx_monitorunit_listener):
         self._llxx_monitorunit_listener = llxx_monitorunit_listener
         self._monitor = None
@@ -128,6 +167,29 @@ class llxx_monitorunit:
     #######################################################################
     def initMonitor(self, monitor):
         self._monitor = monitor
+        self.starttime = datetime.now()
+    
+    '''
+    @note: 获取超时时间
+    '''
+    def getTimeOut(self):
+        return self.timeout
+    
+    '''
+    @note: 设置超时时间
+    @param timeout: 超时时间 
+    '''
+    def setTimeOut(self, timeout):
+        self.timeout = timeout
+    
+    '''
+    @note: 当前是否已经超时
+    '''
+    def isTimeOut(self):
+        # debug
+        # print (datetime.now() - self.starttime).seconds
+        # print self.getTimeOut()
+        return (datetime.now() - self.starttime).seconds > self.getTimeOut()
     
     '''
     @note: 从当前的监听器组合中移除自己
