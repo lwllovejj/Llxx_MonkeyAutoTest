@@ -46,7 +46,7 @@ class llxx_monitor:
         message = None
         while self._start:
             msg = self.messageList.get(True, None)
-            print msg
+            #print msg
             for monitor_unit in self.monitorunits:
                 try:
                     monitor_unit.onMonitor(msg)
