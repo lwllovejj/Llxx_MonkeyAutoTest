@@ -40,7 +40,7 @@ print "点击 娱乐标签 : " + str(ClickCommand(client).performClickByNameInde
 
 llxx_wait(client).waitForTime(3)
 
-takeSnapshot = TakeSnapshot(client)
+takeSnapshot = TakeSnapshot()
 currendir = os.getcwd()
 print takeSnapshot.takeSnapshot(currendir + "//snapshot_yule.png")
 

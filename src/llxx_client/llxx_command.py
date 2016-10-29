@@ -137,24 +137,12 @@ class RegPakcages(command):
 
 class TakeSnapshot(command):
     
-    def __init__(self, client_wrap):
+    def __init__(self):
         command.__init__(self)
-        self.client_wrap = client_wrap
     
     def getAction(self):
         return "takesnapshot"
 
-    def priviteWaitParams(self):
-        issend = self.client_wrap.runMonkeyCommand(self)
-        if issend == False:
-            return False
-        result = llxx_wait(self.client_wrap).waitForParams(self._command, 10)
-        if result != None and result['sucess']:
-            if 'params' in result.keys():
-                return result['params']
-            return True
-        return False
-    
     def takeSnapshot(self, filepath):
         self._params['filepath'] = filepath
         self.runShellCommand("mkdir -p " + PHONE_WORKSPACE + "/snap/")

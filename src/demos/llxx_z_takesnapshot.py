@@ -11,6 +11,6 @@ from llxx_command import TakeSnapshot
 from llxx_client_wrap import llxx_client_wrap
 
 client = llxx_client_wrap()
-takeSnapshot = TakeSnapshot(client)
+takeSnapshot = TakeSnapshot()
 currendir = os.getcwd()
 print takeSnapshot.takeSnapshot(currendir + "//snapshot.png")

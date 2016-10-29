@@ -61,14 +61,15 @@ class llxx_monitor:
     '''
     add monitor unit
     '''
-    def addMonitorUnit(self, unit):
-        self.monitorunits.append(unit)
+    def addMonitorUnit(self, llxx_monitorunit):
+        llxx_monitorunit.initMonitor(self)
+        self.monitorunits.append(llxx_monitorunit)
     
     '''
     remote monitor unit
     '''
-    def removeMonitoUnit(self, unit):
-        self.monitorunits.remove(unit)
+    def removeMonitoUnit(self, llxx_monitorunit):
+        self.monitorunits.remove(llxx_monitorunit)
 
     def start(self):
         self._start = True
@@ -109,13 +110,42 @@ class llxx_monitorunit:
     
     def __init__(self, llxx_monitorunit_listener):
         self._llxx_monitorunit_listener = llxx_monitorunit_listener
+        self._monitor = None
         
     def onMonitor(self, message):
         pass
     
+    ### 回调
     def hookApp(self , llxx_result ):
-        self._llxx_monitorunit_listener.hook(llxx_result)
+        # 开始连接
+        t = threading.Thread(target=self._llxx_monitorunit_listener.hook, args=(llxx_result,))
+        t.setDaemon(True)
+        t.start()
     
+    
+    #######################################################################
+    ### 事件流
+    #######################################################################
+    def initMonitor(self, monitor):
+        self._monitor = monitor
+    
+    '''
+    @note: 从当前的监听器组合中移除自己
+    @param None
+    '''
+    def remove(self):
+        self._monitor.removeMonitoUnit(self)
+    
+    '''
+    @note: 添加下一个监听器，这个的目的主要是用来移除当前的事件之后添加处理下一个事件
+    @param llxx_monitorunit: 下一个监听器
+    '''
+    def addNextMonitor(self, llxx_monitorunit):
+        self._monitor.addMonitorUnit(llxx_monitorunit)
+    
+    #######################################################################
+    ### 节点查询
+    #######################################################################
     def findNode(self, jsonTarget, text):
         node = None
         if type(jsonTarget) == types.DictType:
@@ -137,6 +167,9 @@ class llxx_monitorunit:
         return node
         pass
     
+    '''
+    @note: 查找指定的节点
+    '''
     def findTextNode(self, msg, text):
         target = json.JSONDecoder().decode(msg)
         return self.findNode(target["params"], text)
