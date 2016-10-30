@@ -231,6 +231,13 @@ class llxx_monitorunit:
         pass
     
     '''
+    @note: 获取当前消息的动作类型
+    '''
+    def getAction(self, message):
+        target = json.JSONDecoder().decode(message)
+        return target['action']
+    
+    '''
     @note: 查找指定的节点
     '''
     def findTextNode(self, msg, text):

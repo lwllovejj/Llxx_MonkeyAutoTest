@@ -67,12 +67,17 @@ class llxx_wait:
         return False
     
 
-    
-    def waitForActivity(self, activityName):
+    '''
+    @param activityName: 
+    @param timeout: 
+    @note: 
+    '''
+    def waitForActivity(self, activityName, timeout):
         self._llxx_client_wrap.regMessageListner(self)
         isMatch = False
         isBreak = False
-        while True and (isBreak == False):
+        timetotal = 0.0
+        while True and (isBreak == False and timetotal < timeout):
             # print self.messageList
             for msg in self.messageList:
                 target = json.JSONDecoder().decode(msg)
@@ -81,7 +86,8 @@ class llxx_wait:
                     isBreak = True
                     self.messageList.remove(msg)
                     break;
-                
+            timetotal += 0.1
+            time.sleep(0.1)
         self._llxx_client_wrap.unRegMessageListener(self)
         return isMatch
     

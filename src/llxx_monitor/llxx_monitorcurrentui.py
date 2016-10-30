@@ -18,13 +18,15 @@ class llxx_monitorcurrentui(llxx_monitorunit):
         isInstall = string.find(message, "start_activity") != -1
         if isInstall:
             params = {};
+            params['action'] = self.getAction(message)
             self.hookApp(llxx_result(message, "ui_update", params))
-            print message
+            #print message
         
         ## 安装完成
         isInstallOk = string.find(message, "start_dialog") != -1
         if isInstallOk:
             params = {};
+            params['action'] = self.getAction(message)
             self.hookApp(llxx_result(message, "ui_update", params))
-            print message
+            #print message
             

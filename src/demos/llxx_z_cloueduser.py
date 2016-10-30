@@ -76,7 +76,6 @@ class AppMonitorListener(llxx_monitorunit_listener):
   
 app.addMonitorUnit(llxx_monitorupdate(AppMonitorListener()))
 app.addMonitorUnit(llxx_monitor_dialog(AppMonitorListener()))
-app.addMonitorUnit(llxx_monitorcurrentui(AppMonitorListener()))
 
 # 重启APP并且等待主Activity启动时间
 isStartApp = app.restartApp()

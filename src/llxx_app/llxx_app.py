@@ -9,9 +9,9 @@ Created on 2016年10月28日
 from llxx_client_wrap import llxx_client_wrap
 from llxx_app_context import llxx_app_context
 from llxx_setuperror import Llxx_SetupError
-from llxx_command import RegPakcages
+from llxx_command import RegPakcages, SysOperation
 from llxx_command import AmCommand
-from llxx_command import AmOperation
+from llxx_command import Query
 from llxx_pluggroup import PlugGroup
 
 from llxx_wait import llxx_wait
@@ -22,12 +22,17 @@ class llxx_app:
     _pluggroups = []
     _llxx_client_wrap = None
     _packagename = None
-    def __init__(self, package):
+    
+    '''
+    @param initStopApp: 启动的时候是否强行停止App
+    '''
+    def __init__(self, package , initStopApp = False):
         self._package = package
         self._packagename = package 
         self._regapp = False
         
-        self.stopApp()
+        if initStopApp:
+            self.stopApp()
         
         self._client = llxx_client_wrap()
         llxx_app._llxx_client_wrap = self._client
@@ -57,26 +62,62 @@ class llxx_app:
     ## ========================================================
     ## App Utils
     ## ========================================================    
+    
+    '''
+    @note: 启动当前的APP
+    '''
     def startApp(self):
-        am = AmCommand(self._client)
+        am = AmCommand()
         return am.startApp(self._package)
     
+    '''
+    @note: 停止当前的APP
+    '''
     def stopApp(self):
-        am = AmOperation()
+        am = AmCommand()
         am.stopApp(self._package)
-    
+    '''
+    @note: 重启当前的测试APP
+    '''
     def restartApp(self):
         self.stopApp()
         return self.startApp()
-        
+    
+    '''
+    @note: 获取当前运行在最前面的APP
+    '''
+    def getTopActivity(self):
+        return Query().getTopActivity()
+    
+    '''
+    @note: 启动指定的Acitivity
+    '''
+    def startActivity(self, activityname):
+        result = AmCommand().startActivity(self._package, activityname)
+        if result:
+            return self.waitingActivity(activityname)
+        return False
+    '''
+    @note: 等待指定的Activity启动
+    '''
     def waitingActivity(self, activityname):
-        return llxx_wait(self._client).waitForActivity(activityname)
+        return llxx_wait(self._client).waitForActivity(activityname, 10)
+    
+    ## ========================================================
+    ## Keycode
+    ## ========================================================
+    
+    '''
+    @note: 返回
+    '''
+    def doBack(self):
+        SysOperation().back()
     
     ## ========================================================
     ## Test 
     ## ========================================================
     '''
-    add monitor
+    @note: 添加检测单元
     '''
     def addMonitorUnit(self, unit):
         self._monitor.addMonitorUnit(unit)

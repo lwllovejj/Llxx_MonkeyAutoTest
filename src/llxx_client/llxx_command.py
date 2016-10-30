@@ -14,6 +14,10 @@ import types
 from __builtin__ import str
 import llxx_app
 
+import re
+
+import string
+
 PHONE_WORKSPACE = "/sdcard/llxx/";
 
 class command:
@@ -25,6 +29,19 @@ class command:
         self._params = {
         
         }
+    
+    '''
+    @note: 获取当前和服务端连接的客户端
+    '''
+    def getClientWrap(self):
+        return llxx_app.llxx_app._llxx_client_wrap
+    
+    '''
+    @note: 获取当前测试APP的包名
+    '''
+    def getPackageName(self):
+        return llxx_app.llxx_app._packagename
+    
     '''
     get command
     '''
@@ -67,6 +84,13 @@ class command:
         tmp = os.popen(command).readlines()
         return tmp
     
+    '''
+    @note: 打印字符串列表
+    '''
+    def printList(self, lists):
+        for tmpStr in lists:
+            print tmpStr
+    
 class RegPakcages(command):
     
     def __init__(self, client_wrap):
@@ -106,28 +130,7 @@ class TakeSnapshot(command):
         self.runShellCommand("screencap -p " + filetemp)
         self.runSysCommand("adb pull " + filetemp + " " + filepath)
         return os.path.isfile(filepath)
-'''
-operation
-'''
-class AmOperation(command):
-    def __init__(self):
-        command.__init__(self)
-        self._debug = False
-        
-    def startApp(self, package):
-        command = "adb shell am start " + str(package)
-        
-        if self._debug :
-            print command
-            
-        self.runSysCommand(command)
 
-    '''
-    force stop app 
-    '''
-    def stopApp(self, package):
-        #os.system("adb shell am force-stop com.netease.newsreader.activity")
-        self.runShellCommand("am force-stop " + str(package))
 '''
 operation
 '''
@@ -140,36 +143,64 @@ class SysOperation(command):
     
     def watchprops(self):
         self.runShellCommand("watchprops")
-        
+    
+    '''
+    @note: 返回到主界面
+    '''
+    def back(self):
+        self.runShellCommand("input keyevent 4")
+    
 '''
-query
+Am控制
 '''
 class AmCommand(command):
     
-    def __init__(self, client_wrap):
+    def __init__(self):
         command.__init__(self)
-        self.client_wrap = client_wrap
+        self.client_wrap = self.getClientWrap()
         
     
     def getAction(self):
         return "am"
     
     '''
-    start app 
+    @note: 启动指定的APP
     '''
     def startApp(self, pacakge):
         self._command['type'] = 'start_app'
         self._command['packagename'] = pacakge
         return self.priviteWaitParams(self.client_wrap)
+
+    '''
+    @note: 强行停止指定包名的app
+    '''
+    def stopApp(self, package):
+        # os.system("adb shell am force-stop com.netease.newsreader.activity")
+        self.runShellCommand("am force-stop " + str(package))
     
+    '''
+    @note: 启动指定Activity
+    '''   
+    def startActivity(self, package , activityName):
+        command = "adb shell am start " + str(package) + "/" + str(activityName)
+        #print command
+        lists =  self.runSysCommand(command)
+        for result in lists:
+            if string.find(result, "Permission Denial"):
+                self.printList(lists)
+                return False
+            if string.find(result, "Error:"):
+                self.printList(lists)
+                return False
+        return True
 '''
 query
 '''
 class Query(command):
     
-    def __init__(self, client_wrap):
+    def __init__(self):
         command.__init__(self)
-        self.client_wrap = client_wrap
+        self.client_wrap = self.getClientWrap()
     
     def getAction(self):
         return "query"
@@ -180,14 +211,18 @@ class Query(command):
         if result != None and result['sucess']:
             return result['params']
         return None
-    
+    '''
+    @note: 获取当前正在运行的Acitivity
+    '''
     def getTopActivity(self):
-        self._command['type'] = 'top_activity'
-        result = self.priviteWaitParams()
-        
-        if result != None:
-            return result['class']
-        return None
+#         self._command['type'] = 'top_activity'
+#         result = self.priviteWaitParams()
+#         
+#         if result != None:
+#             return result['class']
+        pattern = re.compile(r"[a-zA-Z0-9\.]+/[a-zA-Z0-9\.]+")
+        out = os.popen("adb shell dumpsys window windows| grep 'name=' | grep '\/'  ").read()
+        return pattern.findall(out)[0]
     
     '''
     get screen size
@@ -201,7 +236,7 @@ class Query(command):
             return result
         return None
     '''
-    get package all Activity
+    @note: 获取当前测试APP的所有Activity
     @return: {'activitys': [{'name': 'xxx.xxx.xxx.Activity1'}, {'name': 'xxx.xxx.xxx.Activity2'}]}
     '''
     def getAllActivity(self, package):
@@ -213,7 +248,9 @@ class Query(command):
             return result
         return None
     
-    
+    '''
+    @note: 获取当前测试APK的所有服务
+    '''
     def getAllService(self, package):
         self._command['type'] = 'allservice'
         self._params['package'] = package
@@ -222,7 +259,10 @@ class Query(command):
         if result != None:
             return result
         return None
-        
+    
+    '''
+    @note: 获取所有的所有安装的app的信息，调用该方法会在 /sdcard/llxx/文件夹下生成所有的icon信息
+    '''    
     def getAllAppInfo(self):
         self._command['type'] = 'allappinfo'
         self._params['dir'] = '/sdcard/llxx/'
@@ -233,7 +273,7 @@ class Query(command):
         return None
 
 
-### 选择器选项
+# ## 选择器选项
 SELECTOR_NIL = 0
 SELECTOR_TEXT = 1
 SELECTOR_START_TEXT = 2
@@ -267,8 +307,8 @@ SELECTOR_RESOURCE_ID = 29
 SELECTOR_CHECKABLE = 30
 SELECTOR_RESOURCE_ID_REGEX = 31
 
-### 需要执行的动作
-ACTION_FOCUS =  0x00000001;
+# ## 需要执行的动作
+ACTION_FOCUS = 0x00000001;
 ACTION_CLEAR_FOCUS = 0x00000002;
 ACTION_SELECT = 0x00000004;
 ACTION_CLEAR_SELECTION = 0x00000008;
@@ -461,27 +501,3 @@ class UiSelectAction(UiSelectQuery):
     '''
     def performClickByNameIndex(self, name, index):
         pass
-
-'''
-query
-'''
-class QueryCommand(command):
-    
-    def __init__(self):
-        command.__init__(self)
-        self.QUERY_TYPE_BY_NONE = 0x00
-        self.QUERY_TYPE_BY_LISTVIEW = 0x01
-    
-    def getAction(self):
-        return "queryAccessibility"
-    
-    '''
-    query none for test
-    '''
-    def queryNone(self):
-        self._command['type'] = self.QUERY_TYPE_BY_NONE
-    
-    def safeDelFile(self, fildpath, filename):
-        targetFile = os.path.join(fildpath, filename)      
-        if os.path.isfile(targetFile): 
-            os.remove(targetFile)
