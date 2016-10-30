@@ -303,6 +303,9 @@ class UiSelectQuery(command):
     def getAction(self):
         return "queryAccessibility"
     
+    '''
+    @note: 根据选择器查询，或执行操作
+    '''
     def query(self):
         self._params['select'] = self._select
         result = self.priviteWaitParams(self.client_wrap)
@@ -310,7 +313,14 @@ class UiSelectQuery(command):
         if result != None:
             return result
         return None
-
+    
+    '''
+    @note: 查询整个列表信息
+    '''
+    def queryHierarchy(self):
+        result = self.priviteWaitParams(self.client_wrap)
+        return result
+    
     '''
     @note: 设置要执行的操作
     '''

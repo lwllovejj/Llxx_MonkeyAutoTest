@@ -11,7 +11,7 @@ from llxx_plugunit import PlugUnit
 from llxx_monitorupdate import llxx_monitorupdate
 from llxx_monitor import llxx_monitorunit_listener
 
-from llxx_command import UiSelectAction, TakeSnapshot
+from llxx_command import UiSelectAction, TakeSnapshot, UiSelectQuery
 from llxx_z_cloueduser_monitor import llxx_monitor_dialog
 
 app = llxx_app("com.cloudd.user")
@@ -60,6 +60,8 @@ class AppMonitorListener(llxx_monitorunit_listener):
             self.snapshot.takeSnapshot("snapshot_monitor_dialog.png")
             performClick = UiSelectAction()
             performClick.performClickByName("知道了")
+            
+            print UiSelectQuery().queryHierarchy()
   
 app.addMonitorUnit(llxx_monitorupdate(AppMonitorListener()))
 app.addMonitorUnit(llxx_monitor_dialog(AppMonitorListener()))
