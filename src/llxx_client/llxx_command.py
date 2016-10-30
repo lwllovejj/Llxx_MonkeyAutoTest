@@ -233,6 +233,7 @@ class Query(command):
         return None
 
 
+### 选择器选项
 SELECTOR_NIL = 0
 SELECTOR_TEXT = 1
 SELECTOR_START_TEXT = 2
@@ -266,6 +267,31 @@ SELECTOR_RESOURCE_ID = 29
 SELECTOR_CHECKABLE = 30
 SELECTOR_RESOURCE_ID_REGEX = 31
 
+### 需要执行的动作
+ACTION_FOCUS =  0x00000001;
+ACTION_CLEAR_FOCUS = 0x00000002;
+ACTION_SELECT = 0x00000004;
+ACTION_CLEAR_SELECTION = 0x00000008;
+ACTION_CLICK = 0x00000010;
+ACTION_LONG_CLICK = 0x00000020;
+ACTION_ACCESSIBILITY_FOCUS = 0x00000040;
+ACTION_CLEAR_ACCESSIBILITY_FOCUS = 0x00000080;
+ACTION_NEXT_AT_MOVEMENT_GRANULARITY = 0x00000100;
+ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY = 0x00000200;
+ACTION_NEXT_HTML_ELEMENT = 0x00000400;
+ACTION_PREVIOUS_HTML_ELEMENT = 0x00000800;
+ACTION_SCROLL_FORWARD = 0x00001000;
+ACTION_SCROLL_BACKWARD = 0x00002000;
+ACTION_COPY = 0x00004000;
+ACTION_PASTE = 0x00008000;
+ACTION_CUT = 0x00010000;
+ACTION_SET_SELECTION = 0x00020000;
+ACTION_EXPAND = 0x00040000;
+ACTION_COLLAPSE = 0x00080000;
+ACTION_DISMISS = 0x00100000;
+ACTION_SET_TEXT = 0x00200000;
+LAST_LEGACY_STANDARD_ACTION = ACTION_SET_TEXT;
+
 class UiSelectQuery(command):
     
     def __init__(self):
@@ -284,6 +310,12 @@ class UiSelectQuery(command):
         if result != None:
             return result
         return None
+
+    '''
+    @note: 设置要执行的操作
+    '''
+    def setAction(self, actionCode):
+        self._params['action'] = actionCode
     
     '''
     @note: 查询指定的类名
@@ -324,6 +356,7 @@ class UiSelectAction(UiSelectQuery):
     '''
     def performClickByName(self, name):
         self.text(name)
+        self.setAction(ACTION_CLICK)
         return self.query()
     
     '''
@@ -341,8 +374,6 @@ class QueryCommand(command):
         command.__init__(self)
         self.QUERY_TYPE_BY_NONE = 0x00
         self.QUERY_TYPE_BY_LISTVIEW = 0x01
-
-        
     
     def getAction(self):
         return "queryAccessibility"
