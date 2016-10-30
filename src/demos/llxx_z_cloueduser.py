@@ -13,6 +13,7 @@ from llxx_monitor import llxx_monitorunit_listener
 
 from llxx_command import UiSelectAction, TakeSnapshot, UiSelectQuery
 from llxx_z_cloueduser_monitor import llxx_monitor_dialog
+from llxx_monitorcurrentui import llxx_monitorcurrentui
 
 app = llxx_app("com.cloudd.user")
 
@@ -61,10 +62,21 @@ class AppMonitorListener(llxx_monitorunit_listener):
             performClick = UiSelectAction()
             performClick.performClickByName("知道了")
             
-            print UiSelectQuery().queryHierarchy()
+#             print UiSelectQuery().queryHierarchy()
+#             print "==========="
+#             
+#             list = UiSelectQuery().queryIdNotNull()
+#             for item in list :
+#                 print item
+#                 
+#             print "==========="
+#             list =  UiSelectQuery().queryCanclick()
+#             for item in list :
+#                 print item
   
 app.addMonitorUnit(llxx_monitorupdate(AppMonitorListener()))
 app.addMonitorUnit(llxx_monitor_dialog(AppMonitorListener()))
+app.addMonitorUnit(llxx_monitorcurrentui(AppMonitorListener()))
 
 # 重启APP并且等待主Activity启动时间
 isStartApp = app.restartApp()

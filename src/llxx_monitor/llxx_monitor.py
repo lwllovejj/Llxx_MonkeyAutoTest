@@ -145,9 +145,10 @@ class llxx_result:
     
 class llxx_monitorunit:  
     
-    starttime = datetime.now()      # 开始时间，会在初始化的时候自动设置
-    timeout = 30                    # 超时时间默认设置为60ms，如果60没有等待到的话就自动被移除了
     def __init__(self, llxx_monitorunit_listener):
+        
+        self.starttime = datetime.now()      # 开始时间，会在初始化的时候自动设置
+        self.timeout = 30                    # 超时时间默认设置为60ms，如果60没有等待到的话就自动被移除了
         self._llxx_monitorunit_listener = llxx_monitorunit_listener
         self._monitor = None
         

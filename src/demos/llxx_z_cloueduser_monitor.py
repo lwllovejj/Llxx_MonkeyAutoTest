@@ -23,6 +23,6 @@ class llxx_monitor_dialog(llxx_monitorunit):
             # print message
             params = {};
             self.hookApp(llxx_result(message, "llxx_monitor_dialog", params))
-            #self.remove()
+            self.remove()
             # print message
             
