@@ -11,7 +11,7 @@ from llxx_plugunit import PlugUnit
 from llxx_monitorupdate import llxx_monitorupdate
 from llxx_monitor import llxx_monitorunit_listener
 
-from llxx_command import ClickCommand, TakeSnapshot
+from llxx_command import UiSelectAction, TakeSnapshot
 from llxx_z_cloueduser_monitor import llxx_monitor_dialog
 
 app = llxx_app("com.cloudd.user")
@@ -30,7 +30,7 @@ class AppMonitorListener(llxx_monitorunit_listener):
         if llxx_result.getType() == "update_dialog":
             self.snapshot.takeSnapshot("snapshot_update_dialog.png")
             print "弹出升级提示，点击确定开始下载任务"
-            performClick = ClickCommand(app._client)
+            performClick = UiSelectAction()
             performClick.performClickByName("确定")
             
         if llxx_result.getType() == "update_dowload_process":
@@ -40,7 +40,7 @@ class AppMonitorListener(llxx_monitorunit_listener):
         if llxx_result.getType() == "apk_install":
             self.snapshot.takeSnapshot("snapshot_update_install.png")
             print "准备安装程序"
-            performClick = ClickCommand(app._client)
+            performClick = UiSelectAction()
             #performClick.performClickByName("取消")
             performClick.performClickByName("安装")
             
@@ -49,7 +49,7 @@ class AppMonitorListener(llxx_monitorunit_listener):
             
             if llxx_result.getParams()["sucess"]:
                 print "安装完成，打开程序"
-                performClick = ClickCommand(app._client)
+                performClick = UiSelectAction()
                 #performClick.performClickByName("取消")
                 performClick.performClickByName("打开")
         
@@ -58,7 +58,7 @@ class AppMonitorListener(llxx_monitorunit_listener):
         #########################################################################
         if llxx_result.getType() == "llxx_monitor_dialog":
             self.snapshot.takeSnapshot("snapshot_monitor_dialog.png")
-            performClick = ClickCommand(app._client)
+            performClick = UiSelectAction()
             performClick.performClickByName("知道了")
   
 app.addMonitorUnit(llxx_monitorupdate(AppMonitorListener()))

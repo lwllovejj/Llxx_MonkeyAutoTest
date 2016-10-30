@@ -12,6 +12,7 @@ import time
 from llxx_wait import llxx_wait
 import types
 from __builtin__ import str
+import llxx_app
 
 PHONE_WORKSPACE = "/sdcard/llxx/";
 
@@ -65,51 +66,6 @@ class command:
     def runSysCommand(self, command):
         tmp = os.popen(command).readlines()
         return tmp
-'''
-click
-'''
-class ClickCommand(command):
-    
-    def __init__(self, client_wrap):
-        command.__init__(self)
-        self.client_wrap = client_wrap
-        
-        self.CLICK_TYPE_BY_NONE = 0x00
-        self.CLICK_TYPE_BY_ID = 0x01
-        self.CLICK_TYPE_BY_NAME = 0x02
-    
-        self.CLICK_TYPE_BY_ID_INDEX = 0x03
-        self.CLICK_TYPE_BY_NAME_INDEX = 0x04
-
-        
-    
-    def getAction(self):
-        return "preformClick"
-    
-    '''
-    click by id
-    '''
-    def performClickById(self, idName):
-        self._params['clicktype'] = self.CLICK_TYPE_BY_ID
-        self._params['name'] = idName
-        self.priviteWaitParams(self.client_wrap)
-        
-    '''
-    click by name
-    '''
-    def performClickByName(self, name):
-        self._params['clicktype'] = self.CLICK_TYPE_BY_NAME
-        self._params['name'] = name
-        return self.priviteWaitParams(self.client_wrap)
-    
-    '''
-    click by name index
-    '''
-    def performClickByNameIndex(self, name, index):
-        self._params['clicktype'] = self.CLICK_TYPE_BY_NAME_INDEX
-        self._params['name'] = name
-        self._params['index'] = index
-        return self.priviteWaitParams(self.client_wrap)
     
 class RegPakcages(command):
     
@@ -309,11 +265,12 @@ SELECTOR_PACKAGE_NAME_REGEX = 28
 SELECTOR_RESOURCE_ID = 29
 SELECTOR_CHECKABLE = 30
 SELECTOR_RESOURCE_ID_REGEX = 31
+
 class UiSelectQuery(command):
     
-    def __init__(self, client_wrap):
+    def __init__(self):
         command.__init__(self)
-        self.client_wrap = client_wrap
+        self.client_wrap = llxx_app.llxx_app._llxx_client_wrap
         self._select = {}
 
     
@@ -328,9 +285,53 @@ class UiSelectQuery(command):
             return result
         return None
     
+    '''
+    @note: 查询指定的类名
+    @param classname: 完整类名
+    '''
     def className(self, classname):
         self._select[str(SELECTOR_CLASS)] = classname
         return self
+    
+    '''
+    @note:查询指定的文本
+    @param text: 需要匹配的文本字段
+    '''
+    def text(self, text):
+        self._select[str(SELECTOR_TEXT)] = text
+        return self
+    
+    
+'''
+@note: 选择指定的UI然后进行操作
+'''
+class UiSelectAction(UiSelectQuery):
+    
+    def __init__(self):
+        UiSelectQuery.__init__(self)
+        
+    def getAction(self):
+        return "uiSecletAction"
+    
+    '''
+    @note: 根据ID点击事件
+    '''
+    def performClickById(self, idName):
+        pass
+        
+    '''
+    @note: 点击包含指定标题的
+    '''
+    def performClickByName(self, name):
+        self.text(name)
+        return self.query()
+    
+    '''
+    click by name index
+    '''
+    def performClickByNameIndex(self, name, index):
+        pass
+
 '''
 query
 '''
@@ -448,9 +449,3 @@ class QueryCommand(command):
         self.findJsonNode(text, 'clickable', "true", lists)
         return lists
         
-# #regPackage        
-        
-if __name__ == '__main__':
-    click = ClickCommand()
-    click.performClickById("com.llxx.service:id/open_toast")
-    print click.getCommand()

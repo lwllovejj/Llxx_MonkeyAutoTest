@@ -17,18 +17,20 @@ from llxx_pluggroup import PlugGroup
 from llxx_wait import llxx_wait
 from llxx_monitor import llxx_monitor
 
-import time
 class llxx_app:
     
     _pluggroups = []
+    _llxx_client_wrap = None
+    _packagename = None
     def __init__(self, package):
         self._package = package
+        self._packagename = package 
         self._regapp = False
         
         self.stopApp()
-        time.sleep(2)
         
         self._client = llxx_client_wrap()
+        llxx_app._llxx_client_wrap = self._client
         
         self._monitor = llxx_monitor(self._client)
         
@@ -51,7 +53,7 @@ class llxx_app:
     '''
     def getContext(self):
         return self._context
-    
+        
     ## ========================================================
     ## App Utils
     ## ========================================================    

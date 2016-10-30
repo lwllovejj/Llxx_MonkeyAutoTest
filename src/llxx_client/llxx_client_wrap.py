@@ -13,7 +13,6 @@ sys.path.append(curPath)
 
 from llxx_client import llxx_client
 from llxx_client import llxx_client_listner
-from llxx_command import ClickCommand
 from llxx_wait import llxx_wait
 
 
@@ -107,40 +106,3 @@ class llxx_client_wrap(llxx_client_listner):
     
     def unRegMessageListener(self, listener):
         self.messageListeners.remove(listener)
-    
-if __name__ == '__main__':
-    os.system("adb forward tcp:8082 tcp:8082")
-    
-    client = llxx_client_wrap()
-    print "------------"
-    click = ClickCommand()
-    
-    #click.performClickById("com.llxx.service:id/open_toast")
-    
-    ## test perform click by text
-    click.performClickByName(u"启动第二页")
-    waitActivity = llxx_wait("com.llxx.servic", client);
-    client.runCommand(click)
-    isMatch = waitActivity.waitForActivity("com.llxx.socket.SecondActivity")
-    
-    if isMatch:
-        print "waitForActivity com.llxx.socket.SecondActivity ok"
-    
-    click.performClickByName(u"关闭页面")
-    waitActivity = llxx_wait("com.llxx.service", client);
-    client.runCommand(click)
-    isMatch = waitActivity.waitForActivity("com.llxx.socket.MainActivity")
-    if isMatch:
-        print "waitForActivity com.llxx.socket.MainActivity ok"
-    
-    ##　test perform click text
-    click.performClickByName(u"Show_Toast")
-    waitToast = llxx_wait("com.llxx.service", client);
-    client.runCommand(click)
-    isMatch = waitToast.waitForNotifyToast(u"show toast")
-    if isMatch:
-        print "waitForNotifyToast ok"
-        
-    exit(0)
-    
-        
