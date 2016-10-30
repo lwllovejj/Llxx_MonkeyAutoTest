@@ -54,8 +54,13 @@ class AppMonitorListener(llxx_monitorunit_listener):
                 performClick.performClickByName("打开")
         
         #########################################################################
-        #
+        # 点击定位开始的知道了
         #########################################################################
+        if llxx_result.getType() == "llxx_monitor_dialog":
+            self.snapshot.takeSnapshot("snapshot_monitor_dialog.png")
+            performClick = ClickCommand(app._client)
+            performClick.performClickByName("知道了")
+  
 app.addMonitorUnit(llxx_monitorupdate(AppMonitorListener()))
 app.addMonitorUnit(llxx_monitor_dialog(AppMonitorListener()))
 
