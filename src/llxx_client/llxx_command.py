@@ -332,6 +332,55 @@ ACTION_DISMISS = 0x00100000;
 ACTION_SET_TEXT = 0x00200000;
 LAST_LEGACY_STANDARD_ACTION = ACTION_SET_TEXT;
 
+class UiSelect():
+    
+    def __init__(self):
+        self._select = {}
+    
+    '''
+    @note: 获取选择器参数
+    '''
+    def getSelect(self):
+        return self._select
+    
+    '''
+    @note: 查询指定的类名
+    @param classname: 完整类名
+    '''
+    def className(self, classname):
+        self._select[str(SELECTOR_CLASS)] = classname
+        return self
+    
+    '''
+    @note:查询指定的文本
+    @param text: 需要匹配的文本字段
+    '''
+    def text(self, text):
+        self._select[str(SELECTOR_TEXT)] = text
+        return self
+    
+    '''
+    @note:查询指定的文本
+    @param text: 需要匹配的文本字段
+    '''
+    def id(self, resourece_id):
+        self._select[str(SELECTOR_ID)] = resourece_id
+        return self
+    
+    '''
+    @note: 多组件联查
+    '''
+    def parent(self, UiSelect):
+        self._select[str(SELECTOR_PARENT)] = UiSelect
+        return self
+    
+    '''
+    @note: 多组件联查，关联子组件
+    '''
+    def child(self, UiSelect):
+        self._select[str(SELECTOR_CHILD)] = UiSelect
+        return self
+    
 class UiSelectQuery(command):
     
     def __init__(self):
@@ -453,24 +502,13 @@ class UiSelectQuery(command):
     '''
     def setAction(self, actionCode):
         self._params['action'] = actionCode
-    
+
     '''
-    @note: 查询指定的类名
-    @param classname: 完整类名
+    @note: 设置选择器
     '''
-    def className(self, classname):
-        self._select[str(SELECTOR_CLASS)] = classname
-        return self
-    
-    '''
-    @note:查询指定的文本
-    @param text: 需要匹配的文本字段
-    '''
-    def text(self, text):
-        self._select[str(SELECTOR_TEXT)] = text
-        return self
-    
-    
+    def setSelect(self, UiSelect):
+        self._select = UiSelect.getSelect()
+        
 '''
 @note: 选择指定的UI然后进行操作
 '''
@@ -486,13 +524,15 @@ class UiSelectAction(UiSelectQuery):
     @note: 根据ID点击事件
     '''
     def performClickById(self, idName):
-        pass
+        self.setSelect(UiSelect().id(idName))
+        self.setAction(ACTION_CLICK)
+        return self.query()
         
     '''
     @note: 点击包含指定标题的
     '''
     def performClickByName(self, name):
-        self.text(name)
+        self.setSelect(UiSelect().text(name))
         self.setAction(ACTION_CLICK)
         return self.query()
     

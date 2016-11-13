@@ -6,7 +6,7 @@ Created on 2016年10月30日
 '''
 
 from llxx_app import llxx_app
-from llxx_command import UiSelectAction, TakeSnapshot
+from llxx_command import UiSelectAction, TakeSnapshot, UiSelectQuery
 from llxx_monitor import llxx_monitorunit_listener
 from llxx_monitorcurrentui import llxx_monitorcurrentui
 
@@ -54,4 +54,15 @@ def toMainActivity():
 toMainActivity()
 print "已启动:" + colloct_activity
 # # 开始测试
-app.run()
+
+print UiSelectQuery().queryHierarchy()
+print "==========="
+ 
+lists = UiSelectQuery().queryIdNotNull()
+for item in lists :
+    print item['resource-id'] + ", " + item['class']
+     
+print "==========="
+lists =  UiSelectQuery().queryCanclick()
+for item in lists :
+    print item
