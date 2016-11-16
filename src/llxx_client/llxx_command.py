@@ -71,6 +71,9 @@ class command:
             if 'params' in result.keys():
                 return result['params']
             return True
+        
+        if result != None and 'reason' in result.keys():
+            self.broadcast_error(result['reason'])
         return False
     
     '''
@@ -91,6 +94,21 @@ class command:
         for tmpStr in lists:
             print tmpStr
     
+    '''
+    @note: 广播错误
+    '''
+    def broadcast_error(self, errorReason):
+        self.getErrorListener().onError(errorReason)
+    
+    def getErrorListener(self):
+        return llxx_app.llxx_app._llxx_error_listener
+    
+    def appendDescribe(self, describe):
+        if 'describe' in self._command:
+            self._command['describe'] += "[ " + describe + " ]"
+        else:
+            self._command['describe'] = "[ " + describe + " ]"
+            
 class RegPakcages(command):
     
     def __init__(self, client_wrap):
@@ -352,6 +370,7 @@ class UiSelect(command):
     '''
     def className(self, classname):
         self._select[str(SELECTOR_CLASS)] = classname
+        self.appendDescribe("classname:" + classname)
         return self
     
     '''
@@ -360,6 +379,7 @@ class UiSelect(command):
     '''
     def text(self, text):
         self._select[str(SELECTOR_TEXT)] = text
+        self.appendDescribe("text:" + text)
         return self
     
     '''
@@ -368,6 +388,7 @@ class UiSelect(command):
     '''
     def id(self, resourece_id):
         self._select[str(SELECTOR_RESOURCE_ID)] = resourece_id
+        self.appendDescribe("id:" + resourece_id)
         return self
     
     '''
@@ -390,28 +411,33 @@ class ActionParam():
     def __init__(self):
         self.params = {}
     
-    def putBoolean(self, value):
+    def putBoolean(self, key, value):
         self.params['type'] = "putBoolean";
+        self.params['key'] = key
         self.params['value'] = value
         return self
         
-    def putInt(self, value):
+    def putInt(self, key, value):
         self.params['type'] = "putInt";
+        self.params['key'] = key
         self.params['value'] = value
         return self
         
-    def putLong(self, value):
+    def putLong(self, key, value):
         self.params['type'] = "putLong";
+        self.params['key'] = key
         self.params['value'] = value
         return self
         
-    def putDouble(self, value):
+    def putDouble(self, key, value):
         self.params['type'] = "putDouble";
+        self.params['key'] = key
         self.params['value'] = value
         return self
         
-    def putString(self, value):
+    def putString(self, key, value):
         self.params['type'] = "putString";
+        self.params['key'] = key
         self.params['value'] = value
         return self
         
@@ -577,6 +603,7 @@ class UiSelectAction(UiSelectQuery):
     '''
     def performClick(self):
         self.setAction(ACTION_CLICK)
+        self.appendDescribe("performClick")
         return self.query()
     
     '''
@@ -584,6 +611,15 @@ class UiSelectAction(UiSelectQuery):
     '''
     def performLongClick(self):
         self.setAction(ACTION_LONG_CLICK)
+        self.appendDescribe("performLongClick")
+        return self.query()
+    
+    '''
+    @note: 选择
+    '''
+    def performSelect(self):
+        self.setAction(ACTION_SELECT)
+        self.appendDescribe("performSelect")
         return self.query()
     
     '''
@@ -591,6 +627,7 @@ class UiSelectAction(UiSelectQuery):
     '''
     def requestFocus(self):
         self.setAction(ACTION_FOCUS)
+        self.appendDescribe("requestFocus")
         return self.query()
     
     '''
@@ -598,6 +635,7 @@ class UiSelectAction(UiSelectQuery):
     '''
     def clearFocus(self):
         self.setAction(ACTION_CLEAR_FOCUS)
+        self.appendDescribe("clearFocus")
         return self.query()
         
     '''
@@ -606,6 +644,7 @@ class UiSelectAction(UiSelectQuery):
     def inputText(self, text):
         self.setAction(ACTION_SET_TEXT)
         self.appendActionParams(ActionParam().putCharSequence(ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE , text).getParams());
+        self.appendDescribe("inputText:" + text)
         return self.query()
 
     '''

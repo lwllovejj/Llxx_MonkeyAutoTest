@@ -16,6 +16,8 @@ from llxx_pluggroup import PlugGroup
 
 from llxx_wait import llxx_wait
 from llxx_monitor import llxx_monitor
+from llxx_error_listener import llxx_error_listener
+import time
 
 '''
 测试栈，用来管理当前的测试队列
@@ -30,16 +32,17 @@ class llxx_test_stack:
     def push_test_unit(self):
         pass
     
-class llxx_app:
+class llxx_app(llxx_error_listener):
     
     _pluggroups = []
     _llxx_client_wrap = None
     _packagename = None
+    _llxx_error_listener = None
     
     '''
     @param initStopApp: 启动的时候是否强行停止App
     '''
-    def __init__(self, package , initStopApp = False):
+    def __init__(self, package , initStopApp=False):
         self._package = package
         self._packagename = package 
         self._regapp = False
@@ -49,6 +52,7 @@ class llxx_app:
         
         self._client = llxx_client_wrap()
         llxx_app._llxx_client_wrap = self._client
+        llxx_app._llxx_error_listener = self
         
         self._monitor = llxx_monitor(self._client)
         
@@ -56,7 +60,7 @@ class llxx_app:
         
         self._defgroup = PlugGroup(self._client)
         self._pluggroups.append(self._defgroup)
-        ### 添加需要测试的package
+        # ## 添加需要测试的package
         regpackages = RegPakcages(self._client)
         packages = []
         packages.append(package)
@@ -73,7 +77,7 @@ class llxx_app:
         return self._context
         
     ## ========================================================
-    ## App Utils
+    # # App Utils
     ## ========================================================    
     
     '''
@@ -117,7 +121,7 @@ class llxx_app:
         return llxx_wait(self._client).waitForActivity(activityname, 10)
     
     ## ========================================================
-    ## Keycode
+    # # Keycode
     ## ========================================================
     
     '''
@@ -127,7 +131,7 @@ class llxx_app:
         SysOperation().back()
     
     ## ========================================================
-    ## Test 
+    # # Test 
     ## ========================================================
     '''
     @note: 添加检测单元
@@ -141,7 +145,7 @@ class llxx_app:
     def removeMonitorUnit(self, unit):
         self._monitor.removeMonitoUnit(unit)
     ## ========================================================
-    ## Test 
+    # # Test 
     ## ========================================================
     '''
     add test group
@@ -169,6 +173,13 @@ class llxx_app:
     '''          
     def stop(self):
         self._monitor.stop()
+    
+    '''
+    @note: 返回失败原因
+    '''
+    def onError(self, errorReason):
+        print errorReason
+        
         
 if __name__ == '__main__':
     pass

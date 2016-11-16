@@ -36,7 +36,10 @@ class llxx_wait:
                     isMatch = True
                     # 遍历数组中的元素
                     for key in maps.keys():
-                        if key == 'params':
+                        if key == 'params' :
+                            continue
+                        
+                        if key == 'describe' :
                             continue
                         
                         if target[key] != maps[key]:
