@@ -183,8 +183,8 @@ class AmCommand(command):
     '''   
     def startActivity(self, package , activityName):
         command = "adb shell am start " + str(package) + "/" + str(activityName)
-        #print command
-        lists =  self.runSysCommand(command)
+        # print command
+        lists = self.runSysCommand(command)
         for result in lists:
             if string.find(result, "Permission Denial"):
                 self.printList(lists)
@@ -380,6 +380,45 @@ class UiSelect():
     def child(self, UiSelect):
         self._select[str(SELECTOR_CHILD)] = UiSelect
         return self
+
+
+class ActionParam():
+    
+    def __init__(self):
+        self.params = {}
+    
+    def putBoolean(self, value):
+        self.params['type'] = "putBoolean";
+        self.params['value'] = value
+        return self
+        
+    def putInt(self, value):
+        self.params['type'] = "putInt";
+        self.params['value'] = value
+        return self
+        
+    def putLong(self, value):
+        self.params['type'] = "putLong";
+        self.params['value'] = value
+        return self
+        
+    def putDouble(self, value):
+        self.params['type'] = "putDouble";
+        self.params['value'] = value
+        return self
+        
+    def putString(self, value):
+        self.params['type'] = "putString";
+        self.params['value'] = value
+        return self
+        
+    def putCharSequence(self, value):
+        self.params['type'] = "putCharSequence";
+        self.params['value'] = value
+        return self
+    
+    def getParams(self):
+        return self.params
     
 class UiSelectQuery(command):
     
@@ -387,6 +426,8 @@ class UiSelectQuery(command):
         command.__init__(self)
         self.client_wrap = llxx_app.llxx_app._llxx_client_wrap
         self._select = {}
+        self._actionparams = []
+        self._params['actionParams'] = self._actionparams
 
     
     def getAction(self):
@@ -504,6 +545,13 @@ class UiSelectQuery(command):
         self._params['action'] = actionCode
 
     '''
+    @note: 追加参数 
+    '''
+    def appendActionParams(self, ActionParam):
+        self._actionparams.append(ActionParam)
+        return self
+    
+    '''
     @note: 设置选择器
     '''
     def setSelect(self, UiSelect):
@@ -541,3 +589,12 @@ class UiSelectAction(UiSelectQuery):
     '''
     def performClickByNameIndex(self, name, index):
         pass
+    
+    '''
+    @note: 输入文本
+    '''
+    def inputText(self, idName , text):
+        self.setSelect(UiSelect().id(idName))
+        self.setAction(ACTION_SET_TEXT)
+        self.appendActionParams(ActionParam().putCharSequence(text).getParams());
+        return self.query()
