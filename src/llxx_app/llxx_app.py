@@ -163,5 +163,12 @@ class llxx_app:
     def run(self):
         for group in self._pluggroups:
             group.run()
+    
+    '''
+    @note: 停止
+    '''          
+    def stop(self):
+        self._monitor.stop()
+        
 if __name__ == '__main__':
     pass

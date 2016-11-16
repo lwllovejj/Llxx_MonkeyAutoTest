@@ -334,9 +334,10 @@ LAST_LEGACY_STANDARD_ACTION = ACTION_SET_TEXT;
 
 ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE = "ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE"
 
-class UiSelect():
+class UiSelect(command):
     
     def __init__(self):
+        command.__init__(self)
         self._select = {}
     
     '''
@@ -423,10 +424,10 @@ class ActionParam():
     def getParams(self):
         return self.params
     
-class UiSelectQuery(command):
+class UiSelectQuery(UiSelect):
     
     def __init__(self):
-        command.__init__(self)
+        UiSelect.__init__(self)
         self.client_wrap = llxx_app.llxx_app._llxx_client_wrap
         self._select = {}
         self._actionparams = []
@@ -572,32 +573,52 @@ class UiSelectAction(UiSelectQuery):
         return "uiSecletAction"
     
     '''
-    @note: 根据ID点击事件
+    @note: 点击事件
     '''
-    def performClickById(self, idName):
-        self.setSelect(UiSelect().id(idName))
+    def performClick(self):
         self.setAction(ACTION_CLICK)
+        return self.query()
+    
+    '''
+    @note: 长按事件
+    '''
+    def performLongClick(self):
+        self.setAction(ACTION_LONG_CLICK)
+        return self.query()
+    
+    '''
+    @note: 请求焦点
+    '''
+    def requestFocus(self):
+        self.setAction(ACTION_FOCUS)
+        return self.query()
+    
+    '''
+    @note: 清除焦点
+    '''
+    def clearFocus(self):
+        self.setAction(ACTION_CLEAR_FOCUS)
         return self.query()
         
     '''
-    @note: 点击包含指定标题的
-    '''
-    def performClickByName(self, name):
-        self.setSelect(UiSelect().text(name))
-        self.setAction(ACTION_CLICK)
-        return self.query()
-    
-    '''
-    click by name index
-    '''
-    def performClickByNameIndex(self, name, index):
-        pass
-    
-    '''
     @note: 输入文本
     '''
-    def inputText(self, idName , text):
-        self.setSelect(UiSelect().id(idName))
+    def inputText(self, text):
         self.setAction(ACTION_SET_TEXT)
-        self.appendActionParams(ActionParam().putCharSequence(ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE ,text).getParams());
+        self.appendActionParams(ActionParam().putCharSequence(ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE , text).getParams());
         return self.query()
+
+    '''
+    @note: 往回滚动
+    '''
+    def scroll_forward(self):
+        self.setAction(ACTION_SCROLL_FORWARD)
+        return self.query()
+    
+    '''
+    @note: 往后滚动
+    '''
+    def scroll_backward(self):
+        self.setAction(ACTION_SCROLL_BACKWARD)
+        return self.query()
+        
