@@ -17,6 +17,19 @@ from llxx_pluggroup import PlugGroup
 from llxx_wait import llxx_wait
 from llxx_monitor import llxx_monitor
 
+'''
+测试栈，用来管理当前的测试队列
+'''
+class llxx_test_stack:
+    
+    
+    test_stack = []
+    def __init__(self):
+        pass
+    
+    def push_test_unit(self):
+        pass
+    
 class llxx_app:
     
     _pluggroups = []

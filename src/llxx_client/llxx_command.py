@@ -332,6 +332,8 @@ ACTION_DISMISS = 0x00100000;
 ACTION_SET_TEXT = 0x00200000;
 LAST_LEGACY_STANDARD_ACTION = ACTION_SET_TEXT;
 
+ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE = "ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE"
+
 class UiSelect():
     
     def __init__(self):
@@ -364,7 +366,7 @@ class UiSelect():
     @param text: 需要匹配的文本字段
     '''
     def id(self, resourece_id):
-        self._select[str(SELECTOR_ID)] = resourece_id
+        self._select[str(SELECTOR_RESOURCE_ID)] = resourece_id
         return self
     
     '''
@@ -412,8 +414,9 @@ class ActionParam():
         self.params['value'] = value
         return self
         
-    def putCharSequence(self, value):
+    def putCharSequence(self, key, value):
         self.params['type'] = "putCharSequence";
+        self.params['key'] = key
         self.params['value'] = value
         return self
     
@@ -596,5 +599,5 @@ class UiSelectAction(UiSelectQuery):
     def inputText(self, idName , text):
         self.setSelect(UiSelect().id(idName))
         self.setAction(ACTION_SET_TEXT)
-        self.appendActionParams(ActionParam().putCharSequence(text).getParams());
+        self.appendActionParams(ActionParam().putCharSequence(ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE ,text).getParams());
         return self.query()

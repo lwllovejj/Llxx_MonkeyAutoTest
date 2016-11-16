@@ -14,6 +14,8 @@ app = llxx_app("com.llxx.service")
 # 
 # UiSelectAction().performClickByName("Toast")
 
+# UiSelectAction().performClickById("com.llxx.service:id/open_toast")
+
 UiSelectAction().inputText("com.llxx.service:id/username", "繁星")
 
 # # 开始测试
