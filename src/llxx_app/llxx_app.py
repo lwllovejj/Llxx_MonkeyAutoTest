@@ -18,6 +18,11 @@ from llxx_wait import llxx_wait
 from llxx_monitor import llxx_monitor
 from llxx_report_listener import llxx_report_listener
 import time
+import threading
+import Queue
+from llxx_report import reportMessage
+import thread_utils
+from llxx_command_control import llxx_command_control
 
 '''
 测试栈，用来管理当前的测试队列
@@ -38,6 +43,8 @@ class llxx_app(llxx_report_listener):
     _llxx_client_wrap = None
     _packagename = None
     _llxx_report_listener = None
+    _llxx_command_control = None
+    reportMessageList = Queue.Queue()
     
     '''
     @param initStopApp: 启动的时候是否强行停止App
@@ -52,7 +59,12 @@ class llxx_app(llxx_report_listener):
         
         self._client = llxx_client_wrap()
         llxx_app._llxx_client_wrap = self._client
+        
         llxx_app._llxx_report_listener = self
+        
+        ## 命令控制
+        self._command_control = llxx_command_control()
+        llxx_app._llxx_command_control = self._command_control
         
         self._monitor = llxx_monitor(self._client)
         
@@ -175,7 +187,33 @@ class llxx_app(llxx_report_listener):
                 unitmsg += "version: " + str(self._currentTestUnit.getVersion()) + "\n"
                 unitmsg += "description: " + self._currentTestUnit.getDescription() + "\n"
                 print unitmsg
-                plug.run()
+                
+                self._command_control.setPass(plug.getName(), False)
+                t = threading.Thread(target=plug.run, args=())
+                t.setName(plug.getName())
+                t.setDaemon(True)
+                t.start()
+                isfinish = False
+                while True:
+                    try:
+                        message = None
+                        message = self.reportMessageList.get(True, 1);
+                    except:
+                        pass
+                    
+                    if message != None:
+                        if message.isSucess() and not isfinish:
+                            print "pass:" + message.getMessage()
+                            
+                        else:
+                            if not isfinish:
+                                print "fail:" + message.getMessage()
+                                isfinish = True
+                                self._command_control.setPass(t.getName(), True)
+                            
+                    # # 如果线程执行完成则退出循环
+                    if not t.isAlive():
+                        break
                 unitmsg = "\n==========================================================\n"
                 print unitmsg
                 
@@ -191,15 +229,13 @@ class llxx_app(llxx_report_listener):
     @note: 返回失败原因
     '''
     def onReportError(self, errorReason):
-        unitmsg = "Fail: " + str(errorReason) + "\n"
-        print unitmsg
+        self.reportMessageList.put(reportMessage().setSucess(False).setMessage(errorReason)) 
     
     '''
     @note: 返回成功消息
     '''
     def onReportSucess(self, sucess):
-        unitmsg = "Pass: " + str(sucess) + "\n"
-        print unitmsg
+        self.reportMessageList.put(reportMessage().setSucess(True).setMessage(sucess)) 
         
 if __name__ == '__main__':
     pass

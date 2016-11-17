@@ -18,6 +18,7 @@ import re
 
 import string
 import llxx_report
+import llxx_command_control
 
 PHONE_WORKSPACE = "/sdcard/llxx/";
 
@@ -64,6 +65,10 @@ class command:
     wait service return action result
     '''
     def priviteWaitParams(self, client_wrap):
+        ## 处理停止工作
+        if self.isCommandPass():
+            return None
+        
         issend = client_wrap.runCommand(self)
         if issend == False:
             return False
@@ -75,7 +80,6 @@ class command:
             return True
         
         if result != None and 'reason' in result.keys():
-            print result
             self.report_error(result['reason'])
         return False
     
@@ -117,7 +121,10 @@ class command:
             self._command['describe'] += "[ " + describe + " ]"
         else:
             self._command['describe'] = "[ " + describe + " ]"
-            
+    
+    def isCommandPass(self):
+        return llxx_command_control.isCommandPass()
+    
 class RegPakcages(command):
     
     def __init__(self, client_wrap):
