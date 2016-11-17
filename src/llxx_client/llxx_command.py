@@ -203,6 +203,7 @@ class AmCommand(command):
     def startApp(self, pacakge):
         self._command['type'] = 'start_app'
         self._command['packagename'] = pacakge
+        self.appendDescribe("启动应用->" + pacakge)
         return self.priviteWaitParams(self.client_wrap)
 
     '''

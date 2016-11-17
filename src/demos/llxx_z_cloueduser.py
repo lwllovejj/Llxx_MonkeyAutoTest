@@ -14,6 +14,7 @@ from llxx_monitor import llxx_monitorunit_listener
 from llxx_command import UiSelectAction, TakeSnapshot, UiSelectQuery
 from llxx_z_cloueduser_monitor import llxx_monitor_dialog
 from llxx_monitorcurrentui import llxx_monitorcurrentui
+from time import time, sleep
 
 app = llxx_app("com.cloudd.user")
 
@@ -31,8 +32,7 @@ class AppMonitorListener(llxx_monitorunit_listener):
         if llxx_result.getType() == "update_dialog":
             self.snapshot.takeSnapshot("snapshot_update_dialog.png")
             print "弹出升级提示，点击确定开始下载任务"
-            performClick = UiSelectAction()
-            performClick.performClickByName("确定")
+            UiSelectAction().text("确定").performClick()
             
         if llxx_result.getType() == "update_dowload_process":
             #print llxx_result.getParams()
@@ -41,26 +41,22 @@ class AppMonitorListener(llxx_monitorunit_listener):
         if llxx_result.getType() == "apk_install":
             self.snapshot.takeSnapshot("snapshot_update_install.png")
             print "准备安装程序"
-            performClick = UiSelectAction()
-            #performClick.performClickByName("取消")
-            performClick.performClickByName("安装")
+            UiSelectAction().text("安装").performClick()
             
         if llxx_result.getType() == "apk_install_report":
             self.snapshot.takeSnapshot("snapshot_update_install_report.png")
             
             if llxx_result.getParams()["sucess"]:
                 print "安装完成，打开程序"
-                performClick = UiSelectAction()
-                #performClick.performClickByName("取消")
-                performClick.performClickByName("打开")
+                UiSelectAction().text("打开").performClick()
         
         #########################################################################
         # 点击定位开始的知道了
         #########################################################################
         if llxx_result.getType() == "llxx_monitor_dialog":
+            print "llxx_monitor_dialog"
             self.snapshot.takeSnapshot("snapshot_monitor_dialog.png")
-            performClick = UiSelectAction()
-            performClick.performClickByName("知道了")
+            UiSelectAction().text("知道了").performClick()
             
 #             print UiSelectQuery().queryHierarchy()
 #             print "==========="
@@ -98,7 +94,7 @@ else:
 #     print activity
 
 # # 添加测试单元
-app.addTestUnits(PlugUnit())
 
 # # 开始测试
-app.run()
+app.start()
+sleep(10)

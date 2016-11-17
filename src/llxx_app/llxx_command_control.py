@@ -27,7 +27,9 @@ class llxx_command_control():
     @note: 是否不执行命令
     '''
     def isPass(self, name):
-        return self.passArray[name]
+        if name in self.passArray.keys():
+            return self.passArray[name]
+        return False
     
 def getCommandControl():
     return llxx_app.llxx_app._llxx_command_control
