@@ -16,7 +16,7 @@ from llxx_pluggroup import PlugGroup
 
 from llxx_wait import llxx_wait
 from llxx_monitor import llxx_monitor
-from llxx_error_listener import llxx_error_listener
+from llxx_report_listener import llxx_report_listener
 import time
 
 '''
@@ -32,12 +32,12 @@ class llxx_test_stack:
     def push_test_unit(self):
         pass
     
-class llxx_app(llxx_error_listener):
+class llxx_app(llxx_report_listener):
     
     _pluggroups = []
     _llxx_client_wrap = None
     _packagename = None
-    _llxx_error_listener = None
+    _llxx_report_listener = None
     
     '''
     @param initStopApp: 启动的时候是否强行停止App
@@ -52,7 +52,7 @@ class llxx_app(llxx_error_listener):
         
         self._client = llxx_client_wrap()
         llxx_app._llxx_client_wrap = self._client
-        llxx_app._llxx_error_listener = self
+        llxx_app._llxx_report_listener = self
         
         self._monitor = llxx_monitor(self._client)
         
@@ -170,7 +170,14 @@ class llxx_app(llxx_error_listener):
         for group in self._pluggroups:
             for plug in group.getTestUnits():
                 self._currentTestUnit = plug
+                unitmsg = "\n==========================================================\n\n"
+                unitmsg += "name: " + str(self._currentTestUnit.getName()) + "\n"
+                unitmsg += "version: " + str(self._currentTestUnit.getVersion()) + "\n"
+                unitmsg += "description: " + self._currentTestUnit.getDescription() + "\n"
+                print unitmsg
                 plug.run()
+                unitmsg = "\n==========================================================\n"
+                print unitmsg
                 
         self.stop()
         
@@ -183,16 +190,16 @@ class llxx_app(llxx_error_listener):
     '''
     @note: 返回失败原因
     '''
-    def onError(self, errorReason):
-        unitmsg = "\n==========================================================\n\n"
-        unitmsg += "error on testunit" + self._currentTestUnit.getName() + "\n"
-        unitmsg += "name: " + str(self._currentTestUnit.getName()) + "\n"
-        unitmsg += "version: " + str(self._currentTestUnit.getVersion()) + "\n"
-        unitmsg += "description: " + self._currentTestUnit.getDescription() + "\n"
-        unitmsg += "reason: " + errorReason + "\n"
-        unitmsg += "\n==========================================================\n"
+    def onReportError(self, errorReason):
+        unitmsg = "Fail: " + str(errorReason) + "\n"
         print unitmsg
-        
+    
+    '''
+    @note: 返回成功消息
+    '''
+    def onReportSucess(self, sucess):
+        unitmsg = "Pass: " + str(sucess) + "\n"
+        print unitmsg
         
 if __name__ == '__main__':
     pass

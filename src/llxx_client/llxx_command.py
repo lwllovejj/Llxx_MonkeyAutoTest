@@ -17,6 +17,7 @@ import llxx_app
 import re
 
 import string
+import llxx_report
 
 PHONE_WORKSPACE = "/sdcard/llxx/";
 
@@ -68,12 +69,14 @@ class command:
             return False
         result = llxx_wait(client_wrap).waitForParams(self._command, 10)
         if result != None and result['sucess']:
+            self.report_sucess(self._command['describe'])
             if 'params' in result.keys():
                 return result['params']
             return True
         
         if result != None and 'reason' in result.keys():
-            self.broadcast_error(result['reason'])
+            print result
+            self.report_error(result['reason'])
         return False
     
     '''
@@ -95,14 +98,20 @@ class command:
             print tmpStr
     
     '''
-    @note: 广播错误
+    @note: 上报错误错误
     '''
-    def broadcast_error(self, errorReason):
-        self.getErrorListener().onError(errorReason)
+    def report_error(self, errorReason):
+        llxx_report.reportError(errorReason)
     
-    def getErrorListener(self):
-        return llxx_app.llxx_app._llxx_error_listener
+    '''
+    @note: 上报成功
+    '''
+    def report_sucess(self, sucess):
+        llxx_report.reportSucess(sucess)
     
+    '''
+    @note: 追加描述
+    '''
     def appendDescribe(self, describe):
         if 'describe' in self._command:
             self._command['describe'] += "[ " + describe + " ]"
