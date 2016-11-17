@@ -13,5 +13,14 @@ class PlugUnit:
     def __init__(self):
         pass
     
-    def run(self, llxx_client):
+    def run(self):
         print "startTest"
+        
+    def getDescription(self):
+        return self.description
+    
+    def getName(self):
+        return self.name
+    
+    def getVersion(self):
+        return self.version

@@ -6,29 +6,33 @@ Created on 2016年9月13日
 @summary: 封装测试组，这里代表了一组测试
 '''
 from llxx_plugunit import PlugUnit
+import llxx_app
 
 class PlugGroup:
     llxx_testunits = []
-    def __init__(self, llxx_client):
-        self._client_wrap = llxx_client
+    def __init__(self):
+        self._client_wrap = llxx_app.llxx_app._llxx_client_wrap
         self.__dpm = DirectoryPluginManager()
         self.__plugins = self.__dpm.loadPlugins()
         
     
-    def addTestUnits(self, unit):
+    def addTestUnit(self, unit):
         self.llxx_testunits.append(unit)
     
-    def addTestPlugs(self, name):
+    def addTestPlug(self, name):
         plugs = self.__dpm.getPlugins(name)
         print plugs
         if plugs != None:
             for plug in plugs:
-                self.addTestUnits(plug)
+                self.addTestUnit(plug)
     
     def run(self):
         for unit in self.llxx_testunits:
-            unit.run(self._client_wrap)
-            
+            unit.run()
+    
+    def getTestUnits(self):
+        return self.llxx_testunits
+    
 from imp import find_module, load_module, acquire_lock, release_lock
 import os
 import sys

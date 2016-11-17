@@ -58,8 +58,10 @@ class llxx_app(llxx_error_listener):
         
         self._context = llxx_app_context(self._client, self._package)
         
-        self._defgroup = PlugGroup(self._client)
+        self._defgroup = PlugGroup()
         self._pluggroups.append(self._defgroup)
+        self._currentTestUnit = None
+        
         # ## 添加需要测试的package
         regpackages = RegPakcages(self._client)
         packages = []
@@ -156,18 +158,22 @@ class llxx_app(llxx_error_listener):
     '''
     add test units to def group
     '''
-    def addTestUnits(self, unit):
-        self._defgroup.addTestUnits(unit)
+    def addTestUnit(self, unit):
+        self._defgroup.addTestUnit(unit)
     
-    def addTestPlugs(self, name):
-        self._defgroup.addTestPlugs(name)
+    def addTestPlug(self, name):
+        self._defgroup.addTestPlug(name)
         
     '''
     '''
-    def run(self):
+    def start(self):
         for group in self._pluggroups:
-            group.run()
-    
+            for plug in group.getTestUnits():
+                self._currentTestUnit = plug
+                plug.run()
+                
+        self.stop()
+        
     '''
     @note: 停止
     '''          
@@ -178,7 +184,14 @@ class llxx_app(llxx_error_listener):
     @note: 返回失败原因
     '''
     def onError(self, errorReason):
-        print errorReason
+        unitmsg = "\n==========================================================\n\n"
+        unitmsg += "error on testunit" + self._currentTestUnit.getName() + "\n"
+        unitmsg += "name: " + str(self._currentTestUnit.getName()) + "\n"
+        unitmsg += "version: " + str(self._currentTestUnit.getVersion()) + "\n"
+        unitmsg += "description: " + self._currentTestUnit.getDescription() + "\n"
+        unitmsg += "reason: " + errorReason + "\n"
+        unitmsg += "\n==========================================================\n"
+        print unitmsg
         
         
 if __name__ == '__main__':
