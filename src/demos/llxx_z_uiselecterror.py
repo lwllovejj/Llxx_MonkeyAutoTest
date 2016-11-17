@@ -18,7 +18,7 @@ class PlugTestUiSelect(PlugUnit):
     def __init__(self):
         self.name = "testuiselect"
         self.version = 1.0
-        self.description = "测试 ui select"
+        self.description = "测试点击ui出错之后处理"
         
     def run(self):
         app.startActivity("com.llxx.socket.MainActivity")

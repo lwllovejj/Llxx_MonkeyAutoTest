@@ -22,7 +22,7 @@ import threading
 import Queue
 from llxx_report import reportMessage
 import thread_utils
-from llxx_command_control import llxx_command_control
+import llxx_command_control
 
 '''
 测试栈，用来管理当前的测试队列
@@ -63,7 +63,7 @@ class llxx_app(llxx_report_listener):
         llxx_app._llxx_report_listener = self
         
         ## 命令控制
-        self._command_control = llxx_command_control()
+        self._command_control = llxx_command_control.llxx_command_control()
         llxx_app._llxx_command_control = self._command_control
         
         self._monitor = llxx_monitor(self._client)
@@ -124,6 +124,9 @@ class llxx_app(llxx_report_listener):
     @note: 启动指定的Acitivity
     '''
     def startActivity(self, activityname):
+        if self.isCommandPass():
+            return False
+        
         result = AmCommand().startActivity(self._package, activityname)
         if result:
             return self.waitingActivity(activityname)
@@ -236,6 +239,9 @@ class llxx_app(llxx_report_listener):
     '''
     def onReportSucess(self, sucess):
         self.reportMessageList.put(reportMessage().setSucess(True).setMessage(sucess)) 
-        
+    
+    def isCommandPass(self):
+        return llxx_command_control.isCommandPass()
+    
 if __name__ == '__main__':
     pass

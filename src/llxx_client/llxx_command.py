@@ -221,10 +221,10 @@ class AmCommand(command):
         lists = self.runSysCommand(command)
         for result in lists:
             if string.find(result, "Permission Denial"):
-                self.printList(lists)
+                #self.printList(lists)
                 return False
             if string.find(result, "Error:"):
-                self.printList(lists)
+                #self.printList(lists)
                 return False
         return True
 '''
