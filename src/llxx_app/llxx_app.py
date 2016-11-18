@@ -225,10 +225,12 @@ class llxx_app(llxx_report_listener):
                                 
                     ## 当进入监控之后就不处理消息了
                     elif message.getType() == llxx_report.REPORT_MSG_TYPE_IN_MONITOR:
+                        print "REPORT_MSG_TYPE_IN_MONITOR"
                         innerIsInMonitor = True
+                        self._command_control.setPass(t.getName(), True)
                     
                     elif message.getType() == llxx_report.REPORT_MSG_TYPE_OUT_MONITOR:
-                        pass
+                        print "REPORT_MSG_TYPE_OUT_MONITOR"
                     
                 # # 如果线程执行完成则退出循环
                 if not t.isAlive():
@@ -289,7 +291,7 @@ class llxx_app(llxx_report_listener):
                 self._currentTestUnit.setReStartByMonitor(False)
             pass
         
-        self.reportMessageList.put(reportMessage) 
+        self.reportMessageList.put(message) 
     
 if __name__ == '__main__':
     pass

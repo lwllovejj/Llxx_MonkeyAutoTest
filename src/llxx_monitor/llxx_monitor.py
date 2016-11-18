@@ -17,6 +17,10 @@ import string
 import types
 import Queue
 from datetime import datetime
+from llxx_plugunit import  PlugUnit
+from llxx_message import Message
+import llxx_report
+from llxx_report import reportMessage
 
 class llxx_monitor:
     
@@ -44,56 +48,62 @@ class llxx_monitor:
     '''
     def monitor(self):
         self._llxx_client_wrap.regMessageListner(self)
-        message = None
         
-        starttime = datetime.now()
+        #starttime = datetime.now()
         while self._start:
+            
+            ## 1.获取message
+            ## 2.解析msg
+            ## 3.找合适的单元分发消息
+            ## 4. 
             try:
-                msg = self.messageList.get(True, 2)
+                msg = self.messageList.get(True, 1)
                 
-            except Exception,ex:
+            except Exception, ex:
                 pass
                 
-            endtime = datetime.now()
+            #endtime = datetime.now()
             # print "units size = " + str(len(self.monitorunits))
             # 配置开始和结束至少30ms以上
-            if len(self.monitorunits) == 0 and (endtime - starttime).seconds > 30:
-                print "----> no units, monitor now stop"
-                self._start = False
-                break
+            #if len(self.monitorunits) == 0 and (endtime - starttime).seconds > 30:
+            #    print "----> no units, monitor now stop"
+            #    self._start = False
+            #    break
             
             if msg == None:
                 continue
             
-            #print msg
+            # 解析信息
+            message = Message(msg)
             timeoutunits = []
             for monitor_unit in self.monitorunits:
                 try:
-                    ### 不处理已经超时的模块
+                    # ## 不处理已经超时的模块
                     if monitor_unit.isTimeOut():
                         timeoutunits.append(monitor_unit)
                     
-                    ### 只处理没有超时的模块
+                    # ## 只处理没有超时的模块
                     else:
-                        monitor_unit.onMonitor(msg)
+                        ## 
+                        if monitor_unit.getAction() == message.getAction():
+                            monitor_unit.onMonitor(message)
                     
-                    ### FOR DEBUG
+                    # ## FOR DEBUG
                     if self._debug:
                         print msg
                         
-                except Exception,ex:
-                    print Exception,":",ex
+                except Exception, ex:
+                    print Exception, ":", ex
                     
-            ### 移除已经超时的模块
+            # ## 移除已经超时的模块
             for monitor_unit in timeoutunits:
                 try:
                     self.monitorunits.remove(monitor_unit)
                     
-                except Exception,ex:
-                    print Exception,":",ex
+                except Exception, ex:
+                    print Exception, ":", ex
             
         self._llxx_client_wrap.unRegMessageListener(self)
-        return message
     
     '''
     add monitor unit
@@ -142,29 +152,31 @@ class llxx_result:
     
     def getParams(self):
         return self._params
+'''
+监测单元
+''' 
+class llxx_monitorunit(PlugUnit):  
     
-class llxx_monitorunit:  
-    
-    def __init__(self, llxx_monitorunit_listener):
+    action = ""
+    def __init__(self):
         
-        self.starttime = datetime.now()      # 开始时间，会在初始化的时候自动设置
-        self.timeout = 30                    # 超时时间默认设置为60ms，如果60没有等待到的话就自动被移除了
-        self._llxx_monitorunit_listener = llxx_monitorunit_listener
+        self.starttime = datetime.now()  # 开始时间，会在初始化的时候自动设置
+        self.timeout = 30  # 超时时间默认设置为60ms，如果60没有等待到的话就自动被移除了
         self._monitor = None
-        
+    
+    
     def onMonitor(self, message):
         pass
     
-    ### 回调
-    def hookApp(self , llxx_result ):
+    # ## 回调
+    def hookApp(self):
         # 开始连接
-        t = threading.Thread(target=self._llxx_monitorunit_listener.hook, args=(llxx_result,))
+        t = threading.Thread(target=self.publishRun, args=())
         t.setDaemon(True)
         t.start()
     
-    
     #######################################################################
-    ### 事件流
+    # ## 事件流
     #######################################################################
     def initMonitor(self, monitor):
         self._monitor = monitor
@@ -178,7 +190,7 @@ class llxx_monitorunit:
     
     '''
     @note: 设置超时时间
-    @param timeout: 超时时间 
+    @param timeout: 超时时间 ,0代表永不超时
     '''
     def setTimeOut(self, timeout):
         self.timeout = timeout
@@ -187,6 +199,8 @@ class llxx_monitorunit:
     @note: 当前是否已经超时
     '''
     def isTimeOut(self):
+        if self.getTimeOut() == 0:
+            return False
         # debug
         # print (datetime.now() - self.starttime).seconds
         # print self.getTimeOut()
@@ -206,36 +220,27 @@ class llxx_monitorunit:
     def addNextMonitor(self, llxx_monitorunit):
         self._monitor.addMonitorUnit(llxx_monitorunit)
     
-    #######################################################################
-    ### 节点查询
-    #######################################################################
-    def findNode(self, jsonTarget, text):
-        node = None
-        if type(jsonTarget) == types.DictType:
-            _temtext = jsonTarget["text"].encode('utf-8')
-            if string.find(_temtext, text) != -1:
-                node = jsonTarget
-                return node
-    
-            if node == None and "node" in jsonTarget and jsonTarget["node"] != None:
-                node = self.findNode(jsonTarget["node"], text)
-                if node != None:
-                    return node
-        
-        if type(jsonTarget) == types.ListType:
-            for jsontemp in jsonTarget:
-                node = self.findNode(jsontemp, text)
-                if node != None:
-                    return node
-        return node
-        pass
+    '''
+    @note: 内部开始执行方法
+    '''
+    def publishRun(self):
+        report = reportMessage().setMsgType(llxx_report.REPORT_MSG_TYPE_IN_MONITOR)
+        llxx_report.sendMessageToApp(report)
+        self.run()
+        report.setMsgType(llxx_report.REPORT_MSG_TYPE_OUT_MONITOR)
+        llxx_report.sendMessageToApp(report)
+            
+    '''
+    @note: 设置动作
+    '''
+    def setAction(self, action):
+        self.action = action
     
     '''
-    @note: 获取当前消息的动作类型
+    @note: 获取当前检测器要拦截的动作，一个检测器只能拦截一种类型的动作
     '''
-    def getAction(self, message):
-        target = json.JSONDecoder().decode(message)
-        return target['action']
+    def getAction(self):
+        return self.action
     
     '''
     @note: 查找指定的节点
@@ -243,7 +248,7 @@ class llxx_monitorunit:
     def findTextNode(self, msg, text):
         target = json.JSONDecoder().decode(msg)
         return self.findNode(target["params"], text)
-        
+    
 if __name__ == '__main__':
     monitor = llxx_monitor(llxx_client_wrap())
     

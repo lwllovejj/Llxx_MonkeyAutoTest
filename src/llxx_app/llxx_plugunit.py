@@ -12,6 +12,8 @@ class PlugUnit:
     version = ''
     
     needReStart = False
+    
+    app = None
     def __init__(self):
         pass
     
@@ -41,4 +43,22 @@ class PlugUnit:
     '''
     def setReStartByMonitor(self, isReStart):
         self.needReStart = isReStart
-        
+    
+    '''
+    @note: 获取是否需要重新测试
+    '''
+    def getReStartByMonitor(self):
+        return self.needReStart
+
+    '''
+    @note: 设置当前运行的app
+    '''
+    def setApp(self, llxx_app):
+        self.app = llxx_app
+        return self
+    
+    '''
+    @note: 获取当前的app
+    '''
+    def getApp(self):
+        return self.app

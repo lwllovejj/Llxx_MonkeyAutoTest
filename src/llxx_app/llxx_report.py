@@ -17,7 +17,7 @@ def reportSucess(sucessDes):
 
 def sendMessageToApp(reportMessage):
     getReportListener().sendMessage(reportMessage)
-    
+
 # 测试状态
 REPORT_MSG_TYPE_TEST_STATUS = 1
 
@@ -67,8 +67,8 @@ class reportMessage():
     '''
     @note: 设置上报消息类型
     '''
-    def setType(self, msg_type):
-        self.type = type
+    def setMsgType(self, msg_type):
+        self.type = msg_type
         return self
     
     '''
