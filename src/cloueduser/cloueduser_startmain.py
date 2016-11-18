@@ -15,9 +15,8 @@ class StartMain(PlugUnit):
     test_count = 0
     def __init__(self):
         self.name = "启动App"
-        self.classname = "启动App"
         self.version = 1.0
-        self.description = "测试 ui select"
+        self.description = "启动主页"
     
     def run(self):
         

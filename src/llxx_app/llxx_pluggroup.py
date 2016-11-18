@@ -9,17 +9,32 @@ from llxx_plugunit import PlugUnit
 import llxx_app
 
 class PlugGroup:
-    llxx_testunits = []
     def __init__(self):
         self._client_wrap = llxx_app.llxx_app._llxx_client_wrap
+        self.classname = ""
         self.__dpm = DirectoryPluginManager()
         self.__plugins = self.__dpm.loadPlugins()
-        
+        self.llxx_testunits = []
     
+    def setClassName(self, classname):
+        self.classname = classname
+        return self
+    
+    def getClassName(self):
+        return self.classname
+    
+    
+    '''
+    @note: 添加测试单元
+    '''
     def addTestUnit(self, unit):
         self.llxx_testunits.append(unit)
     
+    '''
+    @note: 根据名字添加插件
+    '''
     def addTestPlug(self, name):
+        
         plugs = self.__dpm.getPlugins(name)
         print plugs
         if plugs != None:

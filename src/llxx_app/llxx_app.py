@@ -79,6 +79,7 @@ class llxx_app(llxx_report_listener):
         self._context = llxx_app_context(self._client, self._package)
         
         self._defgroup = PlugGroup()
+        self._defgroup.setClassName("未分组")
         self._pluggroups.append(self._defgroup)
         self._currentTestUnit = None
         
@@ -322,8 +323,8 @@ class llxx_app(llxx_report_listener):
                         print "decode fail"
                         
                     report = TestReportUnit()
-                    report.setClass(plug.getName().decode("utf-8", 'replace'))
-                    name = plug.getName() + "_" + str(i)
+                    report.setClass(group.getClassName().decode("utf-8", 'replace'))
+                    name = plug.getName()
                     report.setName(name.decode("utf-8", 'replace'))
                     report.setShortDescription(plug.getDescription().decode("utf-8", 'replace'))
                     if exception:

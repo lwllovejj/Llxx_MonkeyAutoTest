@@ -9,16 +9,23 @@ Created on 2016年11月28日
 from llxx_plugunit import PlugUnit
 from llxx_command import UiSelectAction
 from time import sleep
+from llxx_pluggroup import PlugGroup
 
-
-class TestLogin(PlugUnit):
+class TestLoginGroup(PlugGroup):
+    def __init__(self):
+        PlugGroup.__init__(self)
+        self.setClassName("登录")
+        self.addTestUnit(StartLoginPage())
+    
+    
+class StartLoginPage(PlugUnit):
     
     app = None
     test_count = 0
     def __init__(self):
-        self.name = "登录"
+        self.name = "跳转登录页面"
         self.version = 1.0
-        self.description = "测试登录"
+        self.description = "启动页面到登录页面"
     
     def run(self):
         
