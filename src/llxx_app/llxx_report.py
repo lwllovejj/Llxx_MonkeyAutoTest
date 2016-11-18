@@ -14,7 +14,19 @@ def reportError(errorReason):
     
 def reportSucess(sucessDes):
     getReportListener().onReportSucess(sucessDes)
+
+def sendMessageToApp(reportMessage):
+    getReportListener().sendMessage(reportMessage)
     
+# 测试状态
+REPORT_MSG_TYPE_TEST_STATUS = 1
+
+# 进入监控
+REPORT_MSG_TYPE_IN_MONITOR = 2
+
+# 退出监控
+REPORT_MSG_TYPE_OUT_MONITOR = 3
+
 '''
 上报信息
 '''
@@ -23,6 +35,7 @@ class reportMessage():
     
     def __init__(self):
         self.sucess = False
+        self.type = REPORT_MSG_TYPE_TEST_STATUS
         self.msg = ""
     
     '''
@@ -50,4 +63,17 @@ class reportMessage():
     '''
     def getMessage(self):
         return self.msg
+    
+    '''
+    @note: 设置上报消息类型
+    '''
+    def setType(self, msg_type):
+        self.type = type
+        return self
+    
+    '''
+    @note: 获取上报消息类型
+    '''
+    def getType(self):
+        return self.type
         

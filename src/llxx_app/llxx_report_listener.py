@@ -12,3 +12,6 @@ class llxx_report_listener():
     
     def onReportSucess(self, sucess):
         pass
+    
+    def sendMessage(self, reportMessage):
+        pass

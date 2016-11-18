@@ -10,6 +10,7 @@ import jinja2
 if __name__ == '__main__':
     jinja = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname("templates")),
                     trim_blocks=True, lstrip_blocks=True)
+    print os.path.dirname(__file__)
     error_report_file_name = os.path.realpath("test.html")
     error_report_file = codecs.open(error_report_file_name, 'w',
                                      "utf-8", 'replace')
