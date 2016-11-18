@@ -322,7 +322,6 @@ class llxx_app(llxx_report_listener):
                     report = TestReportUnit()
                     report.setClass(plug.getName().decode("utf-8", 'replace'))
                     report.setName(plug.getDescription().decode("utf-8", 'replace'))
-                    print plug.isSucess()
                     if exception:
                         report.setStatus(TestReportUnit.ERROR)
                         

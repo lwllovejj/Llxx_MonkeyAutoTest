@@ -66,9 +66,9 @@ class TestReportUnit:
             self.unit['type'] = 'failures'
             self.unit['failed'] = True
         
-#         elif status == TestReportUnit.SKIP:
-#             self.unit['type'] = 'skip'
-#             self.unit['failed'] = False
+        elif status == TestReportUnit.SKIP:
+            self.unit['type'] = 'skip'
+            self.unit['failed'] = False
             
         return self
     
