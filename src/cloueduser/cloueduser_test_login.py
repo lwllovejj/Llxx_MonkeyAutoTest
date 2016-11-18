@@ -17,6 +17,7 @@ class TestLoginGroup(PlugGroup):
         PlugGroup.__init__(self)
         self.setClassName("登录")
         self.addTestUnit(StartLoginPage())
+        self.addTestUnit(TestLoginFlow())
     
     
 class StartLoginPage(PlugUnit):
@@ -37,3 +38,28 @@ class StartLoginPage(PlugUnit):
         sleep(1)
         currendir = os.getcwd()
         TakeSnapshot().takeSnapshot(currendir + "/snapscreen/snapshot.png")
+        
+class TestLoginFlow(PlugUnit):
+    
+    app = None
+    test_count = 0
+    def __init__(self):
+        self.name = "验证登录流程正确性"
+        self.version = 1.0
+        self.description = "验证登录流程正确性"
+    
+    def run(self):
+        
+        sleep(1)
+        UiSelectAction().className("android.widget.EditText").performClick()
+        currendir = os.getcwd()
+        TakeSnapshot().takeSnapshot(currendir + "/snapscreen/click_phone_snapshot.png")
+        
+        ## 手机号码格式错误
+        UiSelectAction().className("android.widget.EditText").appendDescribe("验证错误的手机号码").inputText("12345678910")
+        TakeSnapshot().takeSnapshot(currendir + "/snapscreen/phone_number_invalid_snapshot.png")
+        
+        ## 验证错误的手机号码
+        UiSelectAction().className("android.widget.EditText").appendDescribe("验证正确的手机号码").inputText("13945678910")
+        TakeSnapshot().takeSnapshot(currendir + "/snapscreen/phone_number_valid_snapshot.png")
+        

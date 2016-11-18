@@ -123,6 +123,7 @@ class command:
             self._command['describe'] += "[ " + describe + " ]"
         else:
             self._command['describe'] = "[ " + describe + " ]"
+        return self
     
     def isCommandPass(self):
         return llxx_command_control.isCommandPass()
