@@ -183,6 +183,7 @@ class llxx_app(llxx_report_listener):
     '''
     def addTestUnit(self, unit):
         self._defgroup.addTestUnit(unit)
+        unit.setApp(self)
     
     def addTestPlug(self, name):
         self._defgroup.addTestPlug(name)

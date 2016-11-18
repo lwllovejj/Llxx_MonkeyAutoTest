@@ -19,6 +19,8 @@ import re
 import string
 import llxx_report
 import llxx_command_control
+from llxx_node import bounds
+from time import sleep
 
 PHONE_WORKSPACE = "/sdcard/llxx/";
 
@@ -31,7 +33,7 @@ class command:
         self._params = {
         
         }
-    
+        
     '''
     @note: 获取当前和服务端连接的客户端
     '''
@@ -184,6 +186,12 @@ class SysOperation(command):
     def back(self):
         self.runShellCommand("input keyevent 4")
     
+    '''
+    @note: 点击区域
+    '''
+    def clickRect(self, bounds):
+        print "input tap " + bounds.center()
+        self.runShellCommand("input tap " + bounds.center())
 '''
 Am控制
 '''
@@ -620,15 +628,28 @@ class UiSelectAction(UiSelectQuery):
     '''
     def performClick(self):
         self.setAction(ACTION_CLICK)
-        self.appendDescribe("performClick")
+        self.appendDescribe("点击")
         return self.query()
+    
+        '''
+    @note: 点击事件
+    '''
+    def performClickRect(self):
+        self.appendDescribe("查询点击区域")
+        result =  self.query()
+        print result 
+        if result != None and type(result) != types.BooleanType:
+            bound = bounds(result['node']['bounds'])
+            sleep(0.1)
+            SysOperation().clickRect(bound)
+            
     
     '''
     @note: 长按事件
     '''
     def performLongClick(self):
         self.setAction(ACTION_LONG_CLICK)
-        self.appendDescribe("performLongClick")
+        self.appendDescribe("长按")
         return self.query()
     
     '''
@@ -636,7 +657,7 @@ class UiSelectAction(UiSelectQuery):
     '''
     def performSelect(self):
         self.setAction(ACTION_SELECT)
-        self.appendDescribe("performSelect")
+        self.appendDescribe("长按")
         return self.query()
     
     '''

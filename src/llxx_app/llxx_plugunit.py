@@ -10,6 +10,7 @@ class PlugUnit:
     name = ''
     description = ''
     version = ''
+    classname = ''
     
     sucess = True
     
@@ -41,6 +42,12 @@ class PlugUnit:
     '''
     def getVersion(self):
         return self.version
+    
+    '''
+    @note: 获取分类名字
+    '''
+    def getClassName(self):
+        return self.classname
     
     '''
     @note: 是否需要因为监视器重新启动

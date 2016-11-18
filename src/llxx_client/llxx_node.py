@@ -44,3 +44,6 @@ class bounds:
     
     def centerY(self):
         return (self.top() + self.bottom()) / 2
+    
+    def center(self):
+        return " " + str(self.centerX()) + " " + str(self.centerY())

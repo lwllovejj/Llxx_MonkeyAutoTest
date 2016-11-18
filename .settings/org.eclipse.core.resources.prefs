@@ -1,5 +1,9 @@
 eclipse.preferences.version=1
 encoding//src/appium/appium_test_llxx_service.py=utf-8
+encoding//src/cloueduser/cloueduser_monitor_location.py=utf-8
+encoding//src/cloueduser/cloueduser_startmain.py=utf-8
+encoding//src/cloueduser/cloueduser_test_login.py=utf-8
+encoding//src/cloueduser/main_cloueduser.py=utf-8
 encoding//src/demos/llxx_db_test.py=utf-8
 encoding//src/demos/llxx_wangyi_test.py=utf-8
 encoding//src/demos/llxx_z_adbtest.py=utf-8
