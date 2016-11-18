@@ -11,6 +11,8 @@ class PlugUnit:
     description = ''
     version = ''
     
+    sucess = True
+    
     needReStart = False
     
     app = None
@@ -62,3 +64,13 @@ class PlugUnit:
     '''
     def getApp(self):
         return self.app
+
+    def setSucess(self, sucess):
+        self.sucess = sucess
+        return self
+    
+    '''
+    @note: 获取是否成功
+    '''
+    def isSucess(self):
+        return self.sucess

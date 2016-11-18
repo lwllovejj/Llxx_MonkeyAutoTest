@@ -21,10 +21,12 @@ import time
 import threading
 import Queue
 from llxx_report import reportMessage
-import thread_utils
 import llxx_command_control
 import llxx_report
 from time import sleep
+from output_html import OutPutReport, TestReportUnit
+import output_html
+import time_utils
 
 '''
 测试栈，用来管理当前的测试队列
@@ -50,6 +52,8 @@ class llxx_app(llxx_report_listener):
     
     isInMonitor = False
     
+    _report = None
+    
     '''
     @param initStopApp: 启动的时候是否强行停止App
     '''
@@ -66,7 +70,7 @@ class llxx_app(llxx_report_listener):
         
         llxx_app._llxx_report_listener = self
         
-        ## 命令控制
+        # # 命令控制
         self._command_control = llxx_command_control.llxx_command_control()
         llxx_app._llxx_command_control = self._command_control
         
@@ -183,27 +187,67 @@ class llxx_app(llxx_report_listener):
     def addTestPlug(self, name):
         self._defgroup.addTestPlug(name)
     
+    # ## 测试报告
+    def setReportPath(self, path):
+        self._report = OutPutReport(path)
+        print self._report 
+
+    '''
+    @note: 添加报告单元
+    '''
+    def addReportUnit(self, unit):
+        if self._report != None:
+            self._report.addTestReport(unit)
+    
+    '''
+    @note: 设置程序的启动时间
+    '''
+    def setTestStartTile(self):
+        if self._report != None:
+            self._report.setStartTime()
+            
+    '''
+    @note: 打印报告
+    '''
+    def outputReport(self):
+        if self._report != None:
+            self._report.printReport()
+            print "output report sucess"
+            
+    # ## 测试用例
     
     def testUnit(self, plug):
-        ## 表示是否可以跳出这个测试，如果可以则跳出这个测试
+        # # 表示是否可以跳出这个测试，如果可以则跳出这个测试
         isCanPass = False
+        reportmessages = ""
+        passTime = 0
         while not isCanPass:
             
-            ## 如果当前在检测中，则开始休眠
+            # # 如果当前在检测中，则开始休眠
             while self.isInMonitor:
                 sleep(2)
             
+            startTime = time_utils.getTime()
+            reportmessages = ""
             innerIsInMonitor = False
+            index = 1
             unitmsg = "\n==========================================================\n\n"
             unitmsg += "name: " + str(self._currentTestUnit.getName()) + "\n"
             unitmsg += "version: " + str(self._currentTestUnit.getVersion()) + "\n"
             unitmsg += "description: " + self._currentTestUnit.getDescription() + "\n"
             print unitmsg
+            
+            # # clean status
             self._command_control.setPass(plug.getName(), False)
+            plug.setSucess(True)
+            
+            # # start test 
             t = threading.Thread(target=plug.run, args=())
             t.setName(plug.getName())
             t.setDaemon(True)
             t.start()
+            
+            
             isfinish = False
             while True:
                 try:
@@ -216,14 +260,19 @@ class llxx_app(llxx_report_listener):
                     if message.getType() == llxx_report.REPORT_MSG_TYPE_TEST_STATUS:
                         if message.isSucess() and not isfinish:
                             print "pass:" + message.getMessage()
+                            reportmessages += str(index) + "." + " -> pass" + message.getMessage() + "\n"
                             
                         else:
                             if not isfinish:
                                 print "fail:" + message.getMessage()
+                                reportmessages += str(index) + "." + " -> fail" + message.getMessage() + "\n"
                                 isfinish = True
+                                plug.setSucess(False)
                                 self._command_control.setPass(t.getName(), True)
-                                
-                    ## 当进入监控之后就不处理消息了
+                        
+                        index += 1
+                        
+                    # # 当进入监控之后就不处理消息了
                     elif message.getType() == llxx_report.REPORT_MSG_TYPE_IN_MONITOR:
                         print "REPORT_MSG_TYPE_IN_MONITOR"
                         innerIsInMonitor = True
@@ -239,22 +288,37 @@ class llxx_app(llxx_report_listener):
             unitmsg = "\n==========================================================\n"
             print unitmsg
             
-            ## 确认是否退出当前测试
+            # # 确认是否退出当前测试
             if not innerIsInMonitor:
                 isCanPass = True
-            
+            passTime = time_utils.getTime() - startTime
+        
+        #### 填写报告
+        reportmessages = reportmessages.decode("utf-8", 'replace')
+        report = TestReportUnit()
+        report.setClass(plug.getName().decode("utf-8", 'replace'))
+        report.setName(plug.getDescription().decode("utf-8", 'replace'))
+        report.setSucess(plug.isSucess())
+        report.setMessage(reportmessages)
+        report.setTime(passTime)
+        self.addReportUnit(report)
+        
     '''
     '''
     def start(self):
+        
+        self.setTestStartTile()
+        
         for group in self._pluggroups:
             for plug in group.getTestUnits():
                 self._currentTestUnit = plug
 
                 self.testUnit(plug)
-
                 
+        sleep(1)  
+        self.outputReport()   
         self.stop()
-        
+    
     '''
     @note: 停止
     '''          
@@ -278,7 +342,7 @@ class llxx_app(llxx_report_listener):
     
     def sendMessage(self, message):
         
-        ## 当进入监控之后就不处理消息了
+        # # 当进入监控之后就不处理消息了
         if message.getType() == llxx_report.REPORT_MSG_TYPE_IN_MONITOR:
             self.isInMonitor = True
             if not self._currentTestUnit == None:

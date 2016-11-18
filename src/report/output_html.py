@@ -6,98 +6,163 @@ import multiprocessing
 import collections
 
 import jinja2
+import sys
+import time_utils
 
-if __name__ == '__main__':
-    jinja = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname("templates")),
-                    trim_blocks=True, lstrip_blocks=True)
-    print os.path.dirname(__file__)
-    error_report_file_name = os.path.realpath("test.html")
-    error_report_file = codecs.open(error_report_file_name, 'w',
-                                     "utf-8", 'replace')
-    print os.path.basename("templates/report.jinja2")
+
+if sys.version_info[:2] < (3, 0):
+    def force_unicode(s, encoding='UTF-8'):
+        try:
+            s = unicode(s)
+        except UnicodeDecodeError:
+            s = str(s).decode(encoding, 'replace')
+
+        return s
+else:
+    def force_unicode(s, encoding='UTF-8'):
+        return str(s)
     
-    stats = {}
+def exc_message(exeinfo):
+    return exeinfo.decode("utf-8", 'replace')
+
+class TestReportUnit:
+    
+    ERROR = 1       # 错误
+    PASS = 2        # 通过
+    FAIL = 3        # 失败
+    SKIP = 4        # 跳过
+    
+    unit = {'failed': True,
+    'class': u"",
+    'name': u"",
+    'time': str(datetime.timedelta()),
+    'type': 'failures',
+    'exception': '',
+    'message': u"",
+    'stdout': "stdout",
+    'stderr': "stderr",
+    'shortDescription': None
+    }
+    def __init__(self):
+        pass
+        
+    '''
+    @note: 设置是否成功
+    '''
+    def setSucess(self, sucess):
+        if sucess:
+            self.unit['type'] = 'passes'
+            self.unit['failed'] = False
+        else:
+            self.unit['type'] = 'failures'
+            self.unit['failed'] = True
+        return self
+    
+    '''
+    @note: 设置类别
+    '''
+    def setClass(self, classname):
+        self.unit['class'] = classname
+        return self
+
+    '''
+    @note: 设置测试的名字
+    '''
+    def setName(self, testname):
+        self.unit['name'] = testname
+        return self
+    
+    '''
+    @note: 设置消息
+    '''
+    def setMessage(self, message):
+        self.unit['message'] = message
+        return self
+    
+    '''
+    @note: 获取当前单元测试的报告
+    '''
+    def getReport(self):
+        return self.unit
+    
+    '''
+    @note: 设置经过的时长
+    '''
+    def setTime(self, duratoin):
+        self.unit['time'] = duratoin
+
+        
+class OutPutReport:
     
     stats = {   
-                'errors': 0,
-                'failures': 2,
-                'passes': 1,
-                'skipped': 0
-            }
-    stats['encoding'] = "utf-8"
-    stats['testsuite_name'] = "测试"
-    stats['total'] = (stats['errors'] + stats['failures']
-                               + stats['passes'] + stats['skipped'])
+            'errors': 0,
+            'failures': 0,
+            'passes': 0,
+            'skipped': 0
+        }
     
-    manager = multiprocessing.Manager()
-    errorlist = manager.list()
-    
-    errorlist.append({
-    'failed': False,
-    'class': u"成功测试",
-    'name': u"测试1",
-    'time': str(datetime.timedelta()),
-    'type' : 'passes',
-    'exception': '',
-    'stdout': "stdout",
-    'stderr': "stderr",
-    'shortDescription': None,
-    'message' : u'pass:[ text:Toast ][ performClick ]\n' + 
-        u'pass:[ id:com.llxx.service:id/username ][ inputText:大繁星星 ]\n' + 
-        u'pass:[ id:com.llxx.service:id/password ][ inputText:写了个密码 ]\n' + 
-        u'pass:[ id:com.llxx.service:id/password ][ requestFocus ]\n' + 
-        u'pass:[ id:com.llxx.service:id/password ][ clearFocus ]\n' + 
-        u'pass:[ text:Toast ][ performLongClick ]\n'
-    })
-    
-    errorlist.append({
-    'failed': True,
-    'class': u"失败测试",
-    'name': u"测试1",
-    'time': str(datetime.timedelta()),
-    'type': 'failures',
-    'exception': '',
-    'message': u"因为失败",
-    'stdout': "stdout",
-    'stderr': "stderr",
-    'shortDescription': None,
-    })
-    
-    errorlist.append({
-    'failed': True,
-    'class': u"失败测试2",
-    'name': u"测试1",
-    'time': str(datetime.timedelta()),
-    'type': 'failures',
-    'exception': '',
-    'message': u"因为失败",
-    'stdout': "stdout",
-    'stderr': "stderr",
-    'shortDescription': None,
-    })
-     
-    # sort all class names
-    classes = [x['class'] for x in errorlist]
-    class_stats = {'failures':0, 'errors':0, 'skipped':0, 'passes':0, 'total':0}
-    classes.sort()
-    report_jinja = collections.OrderedDict()
-    for _class_ in classes:
-        report_jinja.setdefault(_class_, {})
-        _class_stats_ = class_stats.copy()
-        for _error_ in errorlist:
-            if _class_ != _error_['class']:
-                continue
-            report_jinja[_class_].setdefault('tests', [])
-            if _error_ not in report_jinja[_class_]['tests']:
-                report_jinja[_class_]['tests'].append(_error_)
-            _class_stats_[_error_['type']] += 1
-        _class_stats_['total'] = sum(_class_stats_.values())
-        report_jinja[_class_]['stats'] = _class_stats_
+    def __init__(self, filename):
+        self.jinja = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname("templates")),
+                    trim_blocks=True, lstrip_blocks=True)
         
-    error_report_file.write(jinja.get_template("templates/report.jinja2").render(
-                html_title="测试报告",
-                stats=stats,
-                report=report_jinja,
-                start_time=str("11111"),
-                duration=str("12"),
-                ))
+        self._reportfile = filename
+        
+        # manager = multiprocessing.Manager()
+        # self.reportList = manager.list()
+        self.reportList = []
+        
+        self._starttime = time_utils.getTime()
+        self._title = u'测试报告'
+        pass
+    
+    '''
+    @note: 
+    @param reportUnit: TestReportUnit
+    '''
+    def addTestReport(self, reportUnit):
+        self.reportList.append(reportUnit.getReport())
+        pass
+    
+    def setStartTime(self):
+        self._starttime =  time_utils.getTime()
+        print str(self._starttime)
+        pass
+    
+    def printReport(self):
+        #
+        report_file_name = os.path.realpath(self._reportfile)
+        report_file = codecs.open(report_file_name, 'w',
+                                 "utf-8", 'replace')
+        
+        
+        self.stats['encoding'] = "utf-8"
+        self.stats['testsuite_name'] = "测试"
+        self.stats['total'] = (self.stats['errors'] + self.stats['failures']
+                                   + self.stats['passes'] + self.stats['skipped'])
+        # sort all class names
+        classes = [x['class'] for x in self.reportList]
+        class_stats = {'failures':0, 'errors':0, 'skipped':0, 'passes':0, 'total':0}
+        
+        
+        classes.sort()
+        report_jinja = collections.OrderedDict()
+        for _class_ in classes:
+            report_jinja.setdefault(_class_, {})
+            _class_stats_ = class_stats.copy()
+            for _error_ in self.reportList:
+                if _class_ != _error_['class']:
+                    continue
+                report_jinja[_class_].setdefault('tests', [])
+                if _error_ not in report_jinja[_class_]['tests']:
+                    report_jinja[_class_]['tests'].append(_error_)
+                _class_stats_[_error_['type']] += 1
+            _class_stats_['total'] = sum(_class_stats_.values())
+            report_jinja[_class_]['stats'] = _class_stats_
+            
+        report_file.write(self.jinja.get_template("templates/report.jinja2").render(
+                    html_title=self._title,
+                    stats=self.stats,
+                    report=report_jinja,
+                    start_time=str(self._starttime),
+                    duration_time=str( time_utils.getTime() - self._starttime),
+                    ))
