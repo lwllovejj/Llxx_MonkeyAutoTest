@@ -7,9 +7,10 @@ Created on 2016年11月28日
 '''
 
 from llxx_plugunit import PlugUnit
-from llxx_command import UiSelectAction
+from llxx_command import UiSelectAction, TakeSnapshot
 from time import sleep
 from llxx_pluggroup import PlugGroup
+import os
 
 class TestLoginGroup(PlugGroup):
     def __init__(self):
@@ -34,3 +35,5 @@ class StartLoginPage(PlugUnit):
         sleep(1)
         UiSelectAction().performClickTextRect("登录")
         sleep(1)
+        currendir = os.getcwd()
+        TakeSnapshot().takeSnapshot(currendir + "/snapscreen/snapshot.png")

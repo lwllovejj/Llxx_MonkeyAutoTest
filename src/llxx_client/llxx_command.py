@@ -165,8 +165,11 @@ class TakeSnapshot(command):
         filetemp = PHONE_WORKSPACE + "/snap/snap_" + str(time.time()) + ".png";
         self.runShellCommand("screencap -p " + filetemp)
         self.runSysCommand("adb pull " + filetemp + " " + filepath)
-        return os.path.isfile(filepath)
-
+        isFile = os.path.isfile(filepath)
+        if isFile:
+            self.report_sucess('[截图成功]<a target="_blank" href="' + filepath + '"><img width="20%" height="20%" src="' + filepath + '"  alt="" /></a>')
+        else:
+            self.report_error("[截图失败]" + filepath)
 '''
 operation
 '''
