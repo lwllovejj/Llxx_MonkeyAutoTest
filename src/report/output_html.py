@@ -32,20 +32,19 @@ class TestReportUnit:
     FAIL = 3  # 失败
     SKIP = 4  # 跳过
     
-    unit = {'failed': True,
-    'class': u"",
-    'name': u"",
-    'time': str(datetime.timedelta()),
-    'type': 'failures',
-    'exception': '',
-    'message': u"",
-    'stdout': "stdout",
-    'stderr': "stderr",
-    'shortDescription': None
-    }
-    
     status = PASS
     def __init__(self):
+        self.unit = {'failed': True,
+        'class': u"",
+        'name': u"",
+        'time': str(datetime.timedelta()),
+        'type': 'failures',
+        'exception': '',
+        'message': u"",
+        'stdout': "stdout",
+        'stderr': "stderr",
+        'shortDescription': u"这里是描述",
+        }
         pass
         
     '''
@@ -136,6 +135,7 @@ class OutPutReport:
     '''
     def addTestReport(self, reportUnit):
         self.reportList.append(reportUnit.getReport())
+        
         if reportUnit.status == TestReportUnit.PASS:
             self.stats['passes'] += 1
             
@@ -170,7 +170,6 @@ class OutPutReport:
         classes = [x['class'] for x in self.reportList]
         class_stats = {'failures':0, 'errors':0, 'skipped':0, 'passes':0, 'total':0}
         
-        
         classes.sort()
         report_jinja = collections.OrderedDict()
         for _class_ in classes:
@@ -182,6 +181,7 @@ class OutPutReport:
                 report_jinja[_class_].setdefault('tests', [])
                 if _error_ not in report_jinja[_class_]['tests']:
                     report_jinja[_class_]['tests'].append(_error_)
+                    
                 _class_stats_[_error_['type']] += 1
             _class_stats_['total'] = sum(_class_stats_.values())
             report_jinja[_class_]['stats'] = _class_stats_
