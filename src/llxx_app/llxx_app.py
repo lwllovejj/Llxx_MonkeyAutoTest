@@ -216,18 +216,16 @@ class llxx_app(llxx_report_listener):
             
     # ## 测试用例
     
-    def testUnit(self, plug):
+    def testUnit(self, plug, testNum):
         # # 表示是否可以跳出这个测试，如果可以则跳出这个测试
         isCanPass = False
         reportmessages = ""
-        passTime = 0
         while not isCanPass:
             
             # # 如果当前在检测中，则开始休眠
             while self.isInMonitor:
                 sleep(2)
             
-            startTime = time_utils.getTime()
             reportmessages = ""
             innerIsInMonitor = False
             index = 1
@@ -291,17 +289,8 @@ class llxx_app(llxx_report_listener):
             # # 确认是否退出当前测试
             if not innerIsInMonitor:
                 isCanPass = True
-            passTime = time_utils.getTime() - startTime
         
-        #### 填写报告
-        reportmessages = reportmessages.decode("utf-8", 'replace')
-        report = TestReportUnit()
-        report.setClass(plug.getName().decode("utf-8", 'replace'))
-        report.setName(plug.getDescription().decode("utf-8", 'replace'))
-        report.setSucess(plug.isSucess())
-        report.setMessage(reportmessages)
-        report.setTime(passTime)
-        self.addReportUnit(report)
+        return reportmessages       
         
     '''
     '''
@@ -311,10 +300,41 @@ class llxx_app(llxx_report_listener):
         
         for group in self._pluggroups:
             for plug in group.getTestUnits():
-                self._currentTestUnit = plug
-
-                self.testUnit(plug)
                 
+                reportmessages = ""
+                self._currentTestUnit = plug
+                startTime = time_utils.getTime()
+                for i in range(0, plug.getTestCount()):
+                    reportmessages = ""
+                    exception = False
+                    try:
+                        reportmessages = self.testUnit(plug, i)
+                    except Exception, ex:
+                        exception = True
+                        
+                    #### 填写报告
+                    passTime = time_utils.getTime() - startTime
+                    try:
+                        reportmessages = reportmessages.decode("utf-8", 'replace')
+                    except Exception, ex:
+                        print "decode fail"
+                        
+                    report = TestReportUnit()
+                    report.setClass(plug.getName().decode("utf-8", 'replace'))
+                    report.setName(plug.getDescription().decode("utf-8", 'replace'))
+                    print plug.isSucess()
+                    if exception:
+                        report.setStatus(TestReportUnit.ERROR)
+                        
+                    elif plug.isSucess():
+                        report.setStatus(TestReportUnit.PASS)
+                        
+                    else :
+                        report.setStatus(TestReportUnit.FAIL)
+                        
+                    report.setMessage(reportmessages)
+                    report.setTime(passTime)
+                    self.addReportUnit(report)
         sleep(1)  
         self.outputReport()   
         self.stop()

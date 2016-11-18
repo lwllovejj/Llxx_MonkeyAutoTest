@@ -27,10 +27,10 @@ def exc_message(exeinfo):
 
 class TestReportUnit:
     
-    ERROR = 1       # 错误
-    PASS = 2        # 通过
-    FAIL = 3        # 失败
-    SKIP = 4        # 跳过
+    ERROR = 1  # 错误
+    PASS = 2  # 通过
+    FAIL = 3  # 失败
+    SKIP = 4  # 跳过
     
     unit = {'failed': True,
     'class': u"",
@@ -43,19 +43,33 @@ class TestReportUnit:
     'stderr': "stderr",
     'shortDescription': None
     }
+    
+    status = PASS
     def __init__(self):
         pass
         
     '''
     @note: 设置是否成功
     '''
-    def setSucess(self, sucess):
-        if sucess:
+    def setStatus(self, status):
+        self.status = status
+        
+        if status == TestReportUnit.PASS:
             self.unit['type'] = 'passes'
             self.unit['failed'] = False
-        else:
+            
+        elif status == TestReportUnit.FAIL:
             self.unit['type'] = 'failures'
             self.unit['failed'] = True
+            
+        elif status == TestReportUnit.ERROR:
+            self.unit['type'] = 'failures'
+            self.unit['failed'] = True
+        
+#         elif status == TestReportUnit.SKIP:
+#             self.unit['type'] = 'skip'
+#             self.unit['failed'] = False
+            
         return self
     
     '''
@@ -121,10 +135,21 @@ class OutPutReport:
     '''
     def addTestReport(self, reportUnit):
         self.reportList.append(reportUnit.getReport())
+        if reportUnit.status == TestReportUnit.PASS:
+            self.stats['passes'] += 1
+            
+        elif reportUnit.status == TestReportUnit.FAIL:
+            self.stats['failures'] += 1
+            
+        elif reportUnit.status == TestReportUnit.ERROR:
+            self.stats['errors'] += 1
+            
+        elif reportUnit.status == TestReportUnit.SKIP:
+            self.stats['skipped'] += 1
         pass
     
     def setStartTime(self):
-        self._starttime =  time_utils.getTime()
+        self._starttime = time_utils.getTime()
         print str(self._starttime)
         pass
     
@@ -139,6 +164,7 @@ class OutPutReport:
         self.stats['testsuite_name'] = "测试"
         self.stats['total'] = (self.stats['errors'] + self.stats['failures']
                                    + self.stats['passes'] + self.stats['skipped'])
+        
         # sort all class names
         classes = [x['class'] for x in self.reportList]
         class_stats = {'failures':0, 'errors':0, 'skipped':0, 'passes':0, 'total':0}
@@ -164,5 +190,5 @@ class OutPutReport:
                     stats=self.stats,
                     report=report_jinja,
                     start_time=str(self._starttime),
-                    duration_time=str( time_utils.getTime() - self._starttime),
+                    duration_time=str(time_utils.getTime() - self._starttime),
                     ))

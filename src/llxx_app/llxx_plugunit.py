@@ -15,6 +15,8 @@ class PlugUnit:
     
     needReStart = False
     
+    testCount = 1
+    
     app = None
     def __init__(self):
         pass
@@ -74,3 +76,16 @@ class PlugUnit:
     '''
     def isSucess(self):
         return self.sucess
+    
+    '''
+    @note: 
+    '''
+    def setTestCount(self, count):
+        self.testCount = count
+        return self
+    
+    '''
+    @note: 获取尝试次数
+    '''
+    def getTestCount(self):
+        return self.testCount

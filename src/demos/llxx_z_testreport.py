@@ -19,6 +19,7 @@ app.addMonitorUnit(TestMonitor())
 class PlugTestUiSelect(PlugUnit):
     
     app = None
+    index = 0
     def __init__(self, llxx_app):
         self.app = llxx_app
         self.name = "测试UI Select基础组件"
@@ -28,9 +29,11 @@ class PlugTestUiSelect(PlugUnit):
     def run(self):
         self.app.startActivity("com.llxx.socket.MainActivity")
         time.sleep(1)
-        # 
-        UiSelectAction().text("Toast").performClick()
         
+        if(self.index == 2):
+            UiSelectAction().text("Toast_失败").performClick()
+            
+        UiSelectAction().text("Toast").performClick()
             
         # # 输入文本
         UiSelectAction().id("com.llxx.service:id/username").inputText("大繁星星")
@@ -45,6 +48,7 @@ class PlugTestUiSelect(PlugUnit):
         
         # # 长按
         UiSelectAction().text("Toast").performLongClick()
+        self.index += 1
 
-app.addTestUnit(PlugTestUiSelect(app))
+app.addTestUnit(PlugTestUiSelect(app).setTestCount(5))
 app.start()

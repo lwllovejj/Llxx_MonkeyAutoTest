@@ -52,6 +52,7 @@ class llxx_monitor:
         #starttime = datetime.now()
         while self._start:
             
+            msg = None
             ## 1.获取message
             ## 2.解析msg
             ## 3.找合适的单元分发消息
