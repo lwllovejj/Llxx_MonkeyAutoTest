@@ -79,6 +79,13 @@ class TestReportUnit:
         return self
 
     '''
+    @note: 设置描述
+    '''
+    def setShortDescription(self, description):
+        self.unit['shortDescription'] = description
+        return self
+    
+    '''
     @note: 设置测试的名字
     '''
     def setName(self, testname):
