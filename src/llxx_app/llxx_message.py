@@ -17,8 +17,6 @@ import string
 '''
 class Message():
     
-    message = None
-    jsonMessage = None
     def __init__(self, msg):
         self.message = msg
         self.jsonMessage = json.JSONDecoder().decode(msg)
@@ -52,6 +50,12 @@ class Message():
     
     def getAction(self):
         return self.action
+    
+    '''
+    @note: 获取类名
+    '''
+    def getClassName(self):
+        return self.getParams()["classname"]
     
     '''
     @note: 获取根窗口的windows id

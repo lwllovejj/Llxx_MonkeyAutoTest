@@ -9,7 +9,7 @@ from abc import abstractmethod
 import simplejson as json
 import os
 import time
-from llxx_wait import llxx_wait
+from llxx_wait import llxx_wait, MonitorMessage
 import types
 from __builtin__ import str
 import llxx_app
@@ -67,7 +67,7 @@ class command:
     wait service return action result
     '''
     def priviteWaitParams(self, client_wrap):
-        ## 处理停止工作
+        # # 处理停止工作
         if self.isCommandPass():
             return None
         
@@ -190,7 +190,7 @@ class SysOperation(command):
     @note: 点击区域
     '''
     def clickRect(self, bounds):
-        print "input tap " + bounds.center()
+        # print "input tap " + bounds.center()
         self.runShellCommand("input tap " + bounds.center())
 '''
 Am控制
@@ -230,10 +230,10 @@ class AmCommand(command):
         lists = self.runSysCommand(command)
         for result in lists:
             if string.find(result, "Permission Denial"):
-                #self.printList(lists)
+                # self.printList(lists)
                 return False
             if string.find(result, "Error:"):
-                #self.printList(lists)
+                # self.printList(lists)
                 return False
         return True
 '''
@@ -634,16 +634,30 @@ class UiSelectAction(UiSelectQuery):
         '''
     @note: 点击事件
     '''
-    def performClickRect(self):
+    def performClickTextRect(self, text):
+        self.text(text)
         self.appendDescribe("查询点击区域")
-        result =  self.query()
-        print result 
-        if result != None and type(result) != types.BooleanType:
-            bound = bounds(result['node']['bounds'])
-            sleep(0.1)
-            SysOperation().clickRect(bound)
-            
-    
+        result = False
+        isClick = False
+        tryCount = 0
+        while not isClick and tryCount < 3:
+            result = self.query()
+            if type(result) == types.BooleanType:
+                sleep(0.2)  # # 等待一下，重新查询控件
+                
+            if result != None and type(result) != types.BooleanType:
+                bound = bounds(result['node']['bounds'])
+                monitor = MonitorMessage().prepare()
+                SysOperation().clickRect(bound)
+                isClick = monitor.waitForTextClick(text, 1)
+                
+            # # 尝试
+            tryCount += 1
+        
+        if isClick:
+            self.report_sucess("[点击了文本区域] [" + text + "]")
+        else:
+            self.report_error("[点击文本区域] [" + text + "]")
     '''
     @note: 长按事件
     '''

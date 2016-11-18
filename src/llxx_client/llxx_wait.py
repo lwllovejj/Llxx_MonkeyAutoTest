@@ -7,6 +7,53 @@ Created on 2016年8月26日
 # pip install simplejson
 import simplejson as json
 import time
+import llxx_app
+from llxx_message import Message
+
+    
+class MonitorMessage():
+    
+    messageList = [] 
+    def __init__(self):
+        self._llxx_client_wrap = llxx_app.llxx_app._llxx_client_wrap
+    
+    ## 准备事件监听
+    def prepare(self):
+        self._llxx_client_wrap.regMessageListner(self)
+        return self
+    
+    def onMessage(self, message):
+        if message.strip() != "":
+            self.messageList.append(message)
+            
+    '''
+    @note: 等待文本点击
+    @param maps: 对应数据字典
+    @param timeout: 超时时间
+    '''
+    def waitForTextClick(self, text ,timeout):
+        
+        isMatch = False
+        timetotal = 0.0
+        while True and (isMatch == False and timetotal < timeout):
+            for msg in self.messageList:
+                try:
+                    tempMessage = Message(msg)
+                    isMatch = False
+                    if tempMessage.getAction() == "click":
+                        node = tempMessage.findnode(text)
+                        if node != None:
+                            isMatch = True
+                            
+                    if isMatch:
+                        self.messageList.remove(msg)
+                        break;
+                except:
+                    pass
+            timetotal += 0.1
+            time.sleep(0.1)
+        self._llxx_client_wrap.unRegMessageListener(self)
+        return isMatch
 
 class llxx_wait:
     

@@ -23,5 +23,7 @@ class TestLogin(PlugUnit):
     def run(self):
         
         sleep(1)
-        UiSelectAction().text("我的").performClickRect()
+        UiSelectAction().performClickTextRect("我的")
+        sleep(1)
+        UiSelectAction().performClickTextRect("登录")
         sleep(1)
