@@ -116,7 +116,8 @@ class OutPutReport:
         }
     
     def __init__(self, filename):
-        self.jinja = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname("templates")),
+        self.html_template = os.path.join(os.path.dirname(__file__), "templates", "report.jinja2")
+        self.jinja = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(self.html_template)),
                     trim_blocks=True, lstrip_blocks=True)
         
         self._reportfile = filename
@@ -185,7 +186,7 @@ class OutPutReport:
             _class_stats_['total'] = sum(_class_stats_.values())
             report_jinja[_class_]['stats'] = _class_stats_
             
-        report_file.write(self.jinja.get_template("templates/report.jinja2").render(
+        report_file.write(self.jinja.get_template(os.path.basename(self.html_template)).render(
                     html_title=self._title,
                     stats=self.stats,
                     report=report_jinja,
