@@ -1,0 +1,5 @@
+# 丰富的工具类
+
+monitor_window_state 监听windows状态变化，比如监听TextView文本变化
+monitor_startactivity 监听activity页面启动
+monitor_click 监听按钮点击事件
