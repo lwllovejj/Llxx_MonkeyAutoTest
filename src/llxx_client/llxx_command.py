@@ -19,7 +19,7 @@ import re
 import string
 import llxx_report
 import llxx_command_control
-from llxx_node import bounds
+from llxx_node import bounds, node
 from time import sleep
 
 PHONE_WORKSPACE = "/sdcard/llxx/";
@@ -124,6 +124,18 @@ class command:
         else:
             self._command['describe'] = "[ " + describe + " ]"
         return self
+    
+    '''
+    @note: 获取描述
+    '''
+    def getDescription(self):
+        return self._command['describe']
+    
+    '''
+    @note: 退出当前的测试用例
+    '''
+    def ownExit(self):
+        exit(1)
     
     def isCommandPass(self):
         return llxx_command_control.isCommandPass()
@@ -615,7 +627,36 @@ class UiSelectQuery(UiSelect):
     '''
     def setSelect(self, UiSelect):
         self._select = UiSelect.getSelect()
-        
+
+
+'''
+@note: Ui控件断言
+'''
+class UiAssert(UiSelectQuery):
+    
+    def __init__(self):
+        UiSelectQuery.__init__(self)
+    
+    '''
+    @note: 断言是否禁用控件
+    '''
+    def assertEnable(self, enabled):
+        result = self.query()
+        result_node = self.getNode(result)
+        if result_node == None:
+            self.report_error("未找到控件")
+            self.ownExit()
+
+        if result_node.enabled == enabled:
+            if enabled:
+                self.report_sucess("控件未禁用")
+            else:
+                self.report_sucess("控件已禁用")
+                
+    def getNode(self, jsonParams):
+        return node(jsonParams['node'])
+    
+    
 '''
 @note: 选择指定的UI然后进行操作
 '''
@@ -635,12 +676,12 @@ class UiSelectAction(UiSelectQuery):
         self.appendDescribe("点击")
         return self.query()
     
-        '''
-    @note: 点击事件
+    '''
+    @note: 点击指定的文本区域
     '''
     def performClickTextRect(self, text):
         self.text(text)
-        self.appendDescribe("查询点击区域")
+        self.appendDescribe("查找点击区域")
         result = False
         isClick = False
         tryCount = 0
@@ -662,6 +703,7 @@ class UiSelectAction(UiSelectQuery):
             self.report_sucess("[点击了文本区域] [" + text + "]")
         else:
             self.report_error("[点击文本区域] [" + text + "]")
+            
     '''
     @note: 长按事件
     '''
