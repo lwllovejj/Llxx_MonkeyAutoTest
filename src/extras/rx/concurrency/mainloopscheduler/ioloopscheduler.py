@@ -1,30 +1,31 @@
 import logging
+from datetime import datetime
 
-from rx.core import Disposable
-from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
-from rx.concurrency.schedulerbase import SchedulerBase
+from rx.disposables import Disposable, SingleAssignmentDisposable, \
+    CompositeDisposable
+from rx.concurrency.scheduler import Scheduler
 
 log = logging.getLogger("Rx")
 
-
-class IOLoopScheduler(SchedulerBase):
+class IOLoopScheduler(Scheduler):
     """A scheduler that schedules work via the Tornado I/O main event loop.
 
     http://tornado.readthedocs.org/en/latest/ioloop.html"""
 
     def __init__(self, loop=None):
-        from tornado import ioloop  # Lazy import
+        from tornado import ioloop # Lazy import
         self.loop = loop or ioloop.IOLoop.current()
 
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
 
+        scheduler = self
         disposable = SingleAssignmentDisposable()
         disposed = [False]
 
         def interval():
             if not disposed[0]:
-                disposable.disposable = self.invoke_action(action, state)
+                disposable.disposable = action(scheduler, state)
 
         self.loop.add_callback(interval)
 
@@ -32,7 +33,7 @@ class IOLoopScheduler(SchedulerBase):
             # nonlocal
             disposed[0] = True
 
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return CompositeDisposable(disposable, Disposable(dispose))
 
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime.
@@ -50,9 +51,8 @@ class IOLoopScheduler(SchedulerBase):
             return scheduler.schedule(action, state)
 
         disposable = SingleAssignmentDisposable()
-
         def interval():
-            disposable.disposable = self.invoke_action(action, state)
+            disposable.disposable = action(scheduler, state)
 
         log.debug("timeout: %s", seconds)
         handle = self.loop.call_later(seconds, interval)
@@ -60,7 +60,7 @@ class IOLoopScheduler(SchedulerBase):
         def dispose():
             self.loop.remove_timeout(handle)
 
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return CompositeDisposable(disposable, Disposable(dispose))
 
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime.
@@ -73,11 +73,11 @@ class IOLoopScheduler(SchedulerBase):
         action (best effort)."""
 
         duetime = self.to_datetime(duetime)
-        return self.schedule_relative(duetime - self.now, action, state)
+        return self.schedule_relative(duetime - self.now(), action, state)
 
-    @property
     def now(self):
         """Represents a notion of time for this scheduler. Tasks being scheduled
         on a scheduler will adhere to the time denoted by this property."""
 
         return self.to_datetime(self.loop.time())
+

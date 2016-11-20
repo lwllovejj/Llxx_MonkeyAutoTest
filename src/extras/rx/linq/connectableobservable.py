@@ -1,9 +1,8 @@
-from rx import AnonymousObservable
-from rx.core import ObservableBase, Disposable
-from rx.disposables import CompositeDisposable
+from rx import AnonymousObservable, Observable
+from rx.disposables import Disposable, CompositeDisposable
 
 
-class ConnectableObservable(ObservableBase):
+class ConnectableObservable(Observable):
     """Represents an observable that can be connected and disconnected."""
 
     def __init__(self, source, subject):
@@ -12,10 +11,9 @@ class ConnectableObservable(ObservableBase):
         self.has_subscription = False
         self.subscription = None
 
-        super(ConnectableObservable, self).__init__()
-
-    def _subscribe_core(self, observer):
-        return self.subject.subscribe(observer)
+        def subscribe(observer):
+            return self.subject.subscribe(observer)
+        super(ConnectableObservable, self).__init__(subscribe)
 
     def connect(self):
         """Connects the observable."""
@@ -32,11 +30,10 @@ class ConnectableObservable(ObservableBase):
         return self.subscription
 
     def ref_count(self):
-        """Returns an observable sequence that stays connected to the
-        source as long as there is at least one subscription to the
-        observable sequence.
+        """Returns an observable sequence that stays connected to the source as 
+        long as there is at least one subscription to the observable sequence.
         """
-
+        
         connectable_subscription = [None]
         count = [0]
         source = self

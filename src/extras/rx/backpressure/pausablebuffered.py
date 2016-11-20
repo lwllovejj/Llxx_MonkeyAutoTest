@@ -1,8 +1,7 @@
-from rx.core import ObservableBase, Observable, AnonymousObservable
+from rx import Observable, AnonymousObservable
 from rx.internal import extensionmethod
 from rx.subjects import Subject
 from rx.disposables import CompositeDisposable
-
 
 def combine_latest_source(source, subject, result_selector):
     def subscribe(observer):
@@ -33,7 +32,7 @@ def combine_latest_source(source, subject, result_selector):
 
         def on_error_source(e):
             if values[1]:
-                observer.on_error(e)
+                 observer.on_error(e)
             else:
                 err[0] = e
 
@@ -53,7 +52,7 @@ def combine_latest_source(source, subject, result_selector):
     return AnonymousObservable(subscribe)
 
 
-class PausableBufferedObservable(ObservableBase):
+class PausableBufferedObservable(Observable):
 
     def __init__(self, source, pauser=None):
         self.source = source
@@ -64,9 +63,9 @@ class PausableBufferedObservable(ObservableBase):
         else:
             self.pauser = self.controller
 
-        super(PausableBufferedObservable, self).__init__()
+        super(PausableBufferedObservable, self).__init__(self._subscribe)
 
-    def _subscribe_core(self, observer):
+    def _subscribe(self, observer):
         previous_should_fire = [None]
         queue = []
 
@@ -115,7 +114,6 @@ class PausableBufferedObservable(ObservableBase):
 
     def resume(self):
         self.controller.on_next(True)
-
 
 @extensionmethod(Observable)
 def pausable_buffered(self, subject):

@@ -1,9 +1,10 @@
 from datetime import datetime
 
-from rx.core import Observable, AnonymousObservable
+from rx.observable import Observable
+from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable
 from rx.internal import extensionmethod
-from rx.concurrency import timeout_scheduler
+
 
 @extensionmethod(Observable)
 def take_until_with_time(self, end_time, scheduler=None):

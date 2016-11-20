@@ -1,7 +1,6 @@
-from rx import config
-from rx.core import Observable, AnonymousObservable
+from rx.observable import Observable
+from rx.anonymousobservable import AnonymousObservable
 from rx.concurrency import current_thread_scheduler
-from rx.disposables import MultipleAssignmentDisposable
 from rx.internal import extensionclassmethod
 
 
@@ -15,8 +14,8 @@ def from_iterable(cls, iterable, scheduler=None):
 
     Keyword arguments:
     :param Observable cls: Observable class
-    :param Scheduler scheduler: [Optional] Scheduler to run the
-        enumeration of the input sequence on.
+    :param Scheduler scheduler: [Optional] Scheduler to run the enumeration of 
+        the input sequence on.
 
     :returns: The observable sequence whose elements are pulled from the
         given enumerable sequence.
@@ -24,22 +23,17 @@ def from_iterable(cls, iterable, scheduler=None):
     """
 
     scheduler = scheduler or current_thread_scheduler
-    sd = MultipleAssignmentDisposable()
-    lock = config["concurrency"].RLock()
+    iterator = iter(iterable)
 
     def subscribe(observer):
-        iterator = iter(iterable)
-
-        def action(scheduler, state=None):
+        def action(action1, state=None):
             try:
-                with lock:
-                    item = next(iterator)
+                item = next(iterator)
             except StopIteration:
                 observer.on_completed()
             else:
                 observer.on_next(item)
-                sd.disposable = scheduler.schedule(action)
+                action1(action)
 
-        sd.disposable = scheduler.schedule(action)
-        return sd
+        return scheduler.schedule_recursive(action)
     return AnonymousObservable(subscribe)

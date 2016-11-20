@@ -1,4 +1,4 @@
-from rx.core import Observable
+from rx.observable import Observable
 
 from rx.internal.enumerable import Enumerable
 from rx.internal import extensionclassmethod

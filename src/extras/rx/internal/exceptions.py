@@ -24,8 +24,3 @@ class ReEntracyException(Exception):
 class CompletedException(Exception):
     def __init__(self, msg=None):
         super(CompletedException, self).__init__(msg or 'Observer completed')
-
-
-class WouldBlockException(Exception):
-    def __init__(self, msg=None):
-        super(WouldBlockException, self).__init__(msg or "Would block")

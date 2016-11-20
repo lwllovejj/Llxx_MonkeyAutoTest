@@ -1,4 +1,5 @@
-from rx.core import Observable, AnonymousObservable
+from rx.observable import Observable
+from rx.anonymousobservable import AnonymousObservable
 from rx.internal.utils import is_future
 from rx.internal import extensionclassmethod
 
@@ -30,8 +31,7 @@ def from_future(cls, future):
 
         def dispose():
             if future and future.cancel:
-                future.cancel()
-
+              future.cancel()
         return dispose
 
     return AnonymousObservable(subscribe) if is_future(future) else future

@@ -1,10 +1,10 @@
-from rx.core import Observable
+from rx.observable import Observable
 from rx.concurrency import timeout_scheduler
 from rx.internal import extensionmethod
 
 
 @extensionmethod(Observable)
-def delay_subscription(self, duetime, scheduler=None):
+def delay_subscription(self, duetime, scheduler):
     """Time shifts the observable sequence by delaying the subscription.
 
     1 - res = source.delay_subscription(5000) # 5s

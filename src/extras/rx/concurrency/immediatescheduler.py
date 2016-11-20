@@ -1,11 +1,12 @@
 from datetime import timedelta
 
-from rx.core import Scheduler
-from rx.internal.exceptions import WouldBlockException
-from .schedulerbase import SchedulerBase
+from .scheduler import Scheduler
+
+# Immediate Scheduler
+SCHEDULER_NO_BLOCK_ERROR = "Scheduler is not allowed to block the thread"
 
 
-class ImmediateScheduler(SchedulerBase):
+class ImmediateScheduler(Scheduler):
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
 
@@ -16,7 +17,7 @@ class ImmediateScheduler(SchedulerBase):
 
         duetime = self.to_timedelta(duetime)
         if duetime > timedelta(0):
-            raise WouldBlockException()
+            raise Exception(SCHEDULER_NO_BLOCK_ERROR)
 
         return self.invoke_action(action, state)
 
@@ -24,7 +25,6 @@ class ImmediateScheduler(SchedulerBase):
         """Schedules an action to be executed at duetime."""
 
         duetime = self.to_datetime(duetime)
-        return self.schedule_relative(duetime - self.now, action, state)
-
+        return self.schedule_relative(duetime - self.now(), action, state)
 
 Scheduler.immediate = immediate_scheduler = ImmediateScheduler()

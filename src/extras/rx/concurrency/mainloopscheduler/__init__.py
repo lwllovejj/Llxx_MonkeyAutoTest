@@ -4,6 +4,3 @@ from .geventscheduler import GEventScheduler
 from .twistedscheduler import TwistedScheduler
 from .tkinterscheduler import TkinterScheduler
 from .pygamescheduler import PyGameScheduler
-from .qtscheduler import QtScheduler
-from .wxscheduler import WxScheduler
-from .eventletscheduler import EventLetEventScheduler

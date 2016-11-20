@@ -1,4 +1,5 @@
-from rx.core import Scheduler, Observable
+from rx.concurrency import Scheduler
+from rx.observable import Observable
 
 from rx.concurrency import immediate_scheduler
 from rx.internal import extensionmethod
@@ -15,11 +16,13 @@ def start_with(self, *args, **kw):
     Returns the source sequence prepended with the specified values.
     """
 
-    if isinstance(args[0], Scheduler):
+    scheduler = kw.get("scheduler")
+
+    if not scheduler and isinstance(args[0], Scheduler):
         scheduler = args[0]
         args = args[1:]
     else:
-        scheduler = kw.get("scheduler", immediate_scheduler)
+        scheduler = immediate_scheduler
 
     sequence = [Observable.from_(args, scheduler), self]
     return Observable.concat(sequence)

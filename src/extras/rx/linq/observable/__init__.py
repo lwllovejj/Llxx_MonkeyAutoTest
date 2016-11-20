@@ -132,7 +132,6 @@ from . import window
 from . import windowwithcount
 from . import windowwithtime
 from . import windowwithtimeorcount
-from . import withlatestfrom
 from . import zip
 from . import ziparray
 

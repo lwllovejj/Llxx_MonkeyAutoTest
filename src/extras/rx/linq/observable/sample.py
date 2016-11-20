@@ -1,17 +1,18 @@
-from rx.core import Observable, AnonymousObservable
+from rx.observable import Observable
+from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable
 from rx.concurrency import timeout_scheduler
 from rx.internal import extensionmethod
 
 
 def sample_observable(source, sampler):
-
+    
     def subscribe(observer):
         at_end = [None]
         has_value = [None]
         value = [None]
 
-        def sample_subscribe(x=None):
+        def sample_subscribe(x):
             if has_value[0]:
                 has_value[0] = False
                 observer.on_next(value[0])
@@ -52,7 +53,8 @@ def sample(self, interval=None, sampler=None, scheduler=None):
     """
 
     scheduler = scheduler or timeout_scheduler
-    if interval is not None:
+    if not interval is None:
         return sample_observable(self, Observable.interval(interval, scheduler=scheduler))
 
     return sample_observable(self, sampler)
+

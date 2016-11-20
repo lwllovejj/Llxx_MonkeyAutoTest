@@ -1,16 +1,17 @@
 import logging
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 pygame = None
 
+from rx.disposables import Disposable, SingleAssignmentDisposable, \
+    CompositeDisposable
 from rx.internal import PriorityQueue
-from rx.concurrency.schedulerbase import SchedulerBase
+from rx.concurrency.scheduler import Scheduler
 from rx.concurrency.scheduleditem import ScheduledItem
 
 log = logging.getLogger("Rx")
 
-
-class PyGameScheduler(SchedulerBase):
+class PyGameScheduler(Scheduler):
     """A scheduler that schedules works for PyGame.
 
     http://www.pygame.org/docs/ref/time.html
@@ -34,7 +35,7 @@ class PyGameScheduler(SchedulerBase):
     def run(self):
         while len(self.queue):
             item = self.queue.peek()
-            diff = item.duetime - self.now
+            diff = item.duetime - self.now()
             if diff > timedelta(0):
                 break
 
@@ -52,7 +53,7 @@ class PyGameScheduler(SchedulerBase):
         Returns {Disposable} The disposable object used to cancel the scheduled
         action (best effort)."""
 
-        dt = self.now + self.to_timedelta(duetime)
+        dt = self.now() + self.to_timedelta(duetime)
         si = ScheduledItem(self, state, action, dt)
 
         self.queue.enqueue(si)
@@ -69,11 +70,11 @@ class PyGameScheduler(SchedulerBase):
         Returns {Disposable} The disposable object used to cancel the scheduled
         action (best effort)."""
 
-        return self.schedule_relative(duetime - self.now, action, state)
+        return self.schedule_relative(duetime - self.now(), action, state)
 
-    @property
     def now(self):
         """Represents a notion of time for this scheduler. Tasks being scheduled
         on a scheduler will adhere to the time denoted by this property."""
 
         return self.to_datetime(pygame.time.get_ticks())
+

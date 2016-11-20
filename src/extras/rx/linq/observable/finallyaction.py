@@ -1,4 +1,5 @@
-from rx.core import Observable, AnonymousObservable, Disposable
+from rx import Observable, AnonymousObservable
+from rx.disposables import Disposable
 from rx.internal import extensionmethod
 
 
@@ -22,7 +23,7 @@ def finally_action(self, action):
     def subscribe(observer):
         try:
             subscription = source.subscribe(observer)
-        except Exception:
+        except Exception as ex:
             action()
             raise
 
@@ -32,5 +33,5 @@ def finally_action(self, action):
             finally:
                 action()
 
-        return Disposable.create(dispose)
+        return Disposable(dispose)
     return AnonymousObservable(subscribe)

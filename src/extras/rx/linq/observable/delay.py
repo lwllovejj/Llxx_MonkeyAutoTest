@@ -1,19 +1,19 @@
 import logging
 from datetime import datetime, timedelta
 
-from rx.core import Observable, AnonymousObservable
-from rx.disposables import CompositeDisposable, SerialDisposable, MultipleAssignmentDisposable
+from rx.observable import Observable
+from rx.anonymousobservable import AnonymousObservable
+from rx.disposables import CompositeDisposable, \
+    SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import timeout_scheduler
 from rx.internal import extensionmethod
 
 log = logging.getLogger("Rx")
 
-
 class Timestamp(object):
     def __init__(self, value, timestamp):
         self.value = value
         self.timestamp = timestamp
-
 
 def observable_delay_timespan(source, duetime, scheduler):
     duetime = scheduler.to_timedelta(duetime)
@@ -45,10 +45,10 @@ def observable_delay_timespan(source, duetime, scheduler):
                     log.error("*** Exception: %s", exception[0])
                     observer.on_error(exception[0])
                 else:
-                    mad = MultipleAssignmentDisposable()
-                    cancelable.disposable = mad
+                    d = SingleAssignmentDisposable()
+                    cancelable.disposable = d
 
-                    def action(scheduler, state):
+                    def action(this):
                         if exception[0]:
                             log.error("observable_delay_timespan:subscribe:on_next:action(), exception: %s", exception[0])
                             return
@@ -57,7 +57,7 @@ def observable_delay_timespan(source, duetime, scheduler):
                             running[0] = True
                             while True:
                                 result = None
-                                if len(queue) and queue[0].timestamp <= scheduler.now:
+                                if len(queue) and queue[0].timestamp <= scheduler.now():
                                     result = queue.pop(0).value
 
                                 if result:
@@ -66,11 +66,11 @@ def observable_delay_timespan(source, duetime, scheduler):
                                 if not result:
                                     break
 
-                            should_continue = False
+                            should_recurse = False
                             recurse_duetime = 0
-                            if len(queue):
-                                should_continue = True
-                                diff = queue[0].timestamp - scheduler.now
+                            if len(queue) :
+                                should_recurse = True
+                                diff = queue[0].timestamp - scheduler.now()
                                 zero = timedelta(0) if isinstance(diff, timedelta) else 0
                                 recurse_duetime = max(zero, diff)
                             else:
@@ -81,22 +81,20 @@ def observable_delay_timespan(source, duetime, scheduler):
 
                         if ex:
                             observer.on_error(ex)
-                        elif should_continue:
-                            mad.disposable = scheduler.schedule_relative(recurse_duetime, action)
+                        elif should_recurse:
+                            this(recurse_duetime)
 
-                    mad.disposable = scheduler.schedule_relative(duetime, action)
+                    d.disposable = scheduler.schedule_recursive_with_relative(duetime, action)
         subscription = source.materialize().timestamp(scheduler).subscribe(on_next)
         return CompositeDisposable(subscription, cancelable)
     return AnonymousObservable(subscribe)
 
-
 def observable_delay_date(source, duetime, scheduler):
     def defer():
-        timespan = scheduler.to_datetime(duetime) - scheduler.now
+        timespan = scheduler.to_datetime(duetime) - scheduler.now()
         return observable_delay_timespan(source, timespan, scheduler)
 
     return Observable.defer(defer)
-
 
 @extensionmethod(Observable)
 def delay(self, duetime, scheduler=None):

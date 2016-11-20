@@ -1,10 +1,9 @@
 import math
 import types
 
-from rx.core.notification import OnNext, OnError, OnCompleted
+from rx.notification import OnNext, OnError, OnCompleted
 from .recorded import Recorded
 from .subscription import Subscription
-
 
 def is_prime(i):
     """Tests if number is prime or not"""
@@ -19,7 +18,6 @@ def is_prime(i):
 
     return True
 
-
 # New predicate tests
 class OnNextPredicate(object):
     def __init__(self, predicate):
@@ -28,12 +26,11 @@ class OnNextPredicate(object):
     def __eq__(self, other):
         if other == self:
             return True
-        if other is None:
+        if other == None:
             return False
         if other.kind != 'N':
             return False
         return self.predicate(other.value)
-
 
 class OnErrorPredicate(object):
     def __init__(self, predicate):
@@ -42,12 +39,11 @@ class OnErrorPredicate(object):
     def __eq__(self, other):
         if other == self:
             return True
-        if other is None:
+        if other == None:
             return False
         if other.kind != 'E':
             return False
         return self.predicate(other.exception)
-
 
 class ReactiveTest(object):
     created = 100
@@ -56,14 +52,14 @@ class ReactiveTest(object):
 
     @classmethod
     def on_next(cls, ticks, value):
-        if isinstance(value, types.FunctionType):
+        if type(value) == types.FunctionType:
             return Recorded(ticks, OnNextPredicate(value))
 
         return Recorded(ticks, OnNext(value))
 
     @classmethod
     def on_error(cls, ticks, exception):
-        if isinstance(exception, types.FunctionType):
+        if type(exception) == types.FunctionType:
             return Recorded(ticks, OnErrorPredicate(exception))
 
         return Recorded(ticks, OnError(exception))
@@ -75,3 +71,4 @@ class ReactiveTest(object):
     @classmethod
     def subscribe(cls, start, end):
         return Subscription(start, end)
+

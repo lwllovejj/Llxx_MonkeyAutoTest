@@ -1,6 +1,5 @@
 from rx import Observable, AnonymousObservable
 from rx.internal import extensionmethod
-from rx.concurrency import timeout_scheduler
 
 
 @extensionmethod(Observable)
@@ -37,13 +36,13 @@ def take_last_with_time(self, duration, scheduler=None):
         q = []
 
         def on_next(x):
-            now = scheduler.now
-            q.append({"interval": now, "value": x})
+            now = scheduler.now()
+            q.append({ "interval": now, "value": x })
             while len(q) and now - q[0]["interval"] >= duration:
                 q.pop(0)
 
         def on_completed():
-            now = scheduler.now
+            now = scheduler.now()
             while len(q):
                 next = q.pop(0)
                 if now - next["interval"] <= duration:
@@ -53,3 +52,4 @@ def take_last_with_time(self, duration, scheduler=None):
 
         return source.subscribe(on_next, observer.on_error, on_completed)
     return AnonymousObservable(subscribe)
+

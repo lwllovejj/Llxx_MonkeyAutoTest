@@ -1,6 +1,5 @@
-from rx.core import Observable
+from rx import Observable
 from rx.internal import extensionmethod
-
 
 @extensionmethod(Observable)
 def buffer(self, buffer_openings=None, closing_selector=None, buffer_closing_selector=None):

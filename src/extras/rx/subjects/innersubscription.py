@@ -1,4 +1,4 @@
-from rx import config
+from rx import Lock
 
 
 class InnerSubscription(object):
@@ -6,7 +6,7 @@ class InnerSubscription(object):
         self.subject = subject
         self.observer = observer
 
-        self.lock = config["concurrency"].RLock()
+        self.lock = Lock()
 
     def dispose(self):
         with self.lock:
@@ -14,3 +14,4 @@ class InnerSubscription(object):
                 if self.observer in self.subject.observers:
                     self.subject.observers.remove(self.observer)
                 self.observer = None
+

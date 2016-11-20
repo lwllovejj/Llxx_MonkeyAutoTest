@@ -1,37 +1,42 @@
 # Current Thread Scheduler
+
 import time
 import logging
-import threading
 from datetime import timedelta
 
-from rx import config
-from rx.core import Scheduler
 from rx.internal import PriorityQueue
 
-from .schedulerbase import SchedulerBase
+from .scheduler import Scheduler
 from .scheduleditem import ScheduledItem
 
 log = logging.getLogger('Rx')
 
-
 class Trampoline(object):
-    @classmethod
-    def run(cls, queue):
-        while len(queue):
-            item = queue.dequeue()
+    def __init__(self, scheduler):
+        self.queue = PriorityQueue(4)
+        self.scheduler = scheduler
+
+    def enqueue(self, item):
+        return self.queue.enqueue(item)
+
+    def dispose(self):
+        self.queue = None
+
+    def run(self):
+        while len(self.queue):
+            item = self.queue.dequeue()
             if not item.is_cancelled():
-                diff = item.duetime - current_thread_scheduler.now
+                diff = item.duetime - self.scheduler.now()
                 while diff > timedelta(0):
                     seconds = diff.seconds + diff.microseconds / 1E6 + diff.days * 86400
                     log.warning("Do not schedule blocking work!")
                     time.sleep(seconds)
-                    diff = item.duetime - current_thread_scheduler.now
+                    diff = item.duetime - self.scheduler.now()
 
                 if not item.is_cancelled():
                     item.invoke()
 
-
-class CurrentThreadScheduler(SchedulerBase):
+class CurrentThreadScheduler(Scheduler):
     """Represents an object that schedules units of work on the current
     thread. You never want to schedule timeouts using the CurrentThreadScheduler
     since it will block the current thread while waiting."""
@@ -40,8 +45,7 @@ class CurrentThreadScheduler(SchedulerBase):
         """Gets a scheduler that schedules work as soon as possible on the
         current thread."""
 
-        self.queues = dict()
-        self.lock = config["concurrency"].RLock()
+        self.queue = None
 
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
@@ -54,21 +58,19 @@ class CurrentThreadScheduler(SchedulerBase):
 
         duetime = self.to_timedelta(duetime)
 
-        dt = self.now + SchedulerBase.normalize(duetime)
+        dt = self.now() + Scheduler.normalize(duetime)
         si = ScheduledItem(self, state, action, dt)
 
-        queue = self.queue
-        if queue is None:
-            queue = PriorityQueue(4)
-            queue.enqueue(si)
-
-            self.queue = queue
+        if not self.queue:
+            self.queue = Trampoline(self)
             try:
-                Trampoline.run(queue)
+                self.queue.enqueue(si)
+                self.queue.run()
             finally:
+                self.queue.dispose()
                 self.queue = None
         else:
-            queue.enqueue(si)
+            self.queue.enqueue(si)
 
         return si.disposable
 
@@ -76,35 +78,19 @@ class CurrentThreadScheduler(SchedulerBase):
         """Schedules an action to be executed at duetime."""
 
         duetime = self.to_datetime(duetime)
-        return self.schedule_relative(duetime - self.now, action, state=None)
-
-    def get_queue(self):
-        ident = threading.current_thread().ident
-
-        with self.lock:
-            return self.queues.get(ident)
-
-    def set_queue(self, queue):
-        ident = threading.current_thread().ident
-
-        with self.lock:
-            self.queues[ident] = queue
-
-    queue = property(get_queue, set_queue)
+        return self.schedule_relative(duetime - self.now(), action, state=None)
 
     def schedule_required(self):
-        """Test if scheduling is required.
-
-        Gets a value indicating whether the caller must call a
-        schedule method. If the trampoline is active, then it returns
-        False; otherwise, if  the trampoline is not active, then it
-        returns True.
-        """
+        """Gets a value indicating whether the caller must call a schedule 
+        method. If the trampoline is active, then it returns False; otherwise, 
+        if  the trampoline is not active, then it returns True."""
+        
         return self.queue is None
 
     def ensure_trampoline(self, action):
-        """Method for testing the CurrentThreadScheduler."""
-        if self.schedule_required():
+        """Method for testing the CurrentThreadScheduler"""
+
+        if self.queue is None:
             return self.schedule(action)
         else:
             return action(self, None)

@@ -1,6 +1,6 @@
-from rx.core import AnonymousObservable, Observable
+from rx import AnonymousObservable, Observable
 from rx.internal import extensionmethod
-from rx.core.observeonobserver import ObserveOnObserver
+from rx.observeonobserver import ObserveOnObserver
 
 
 @extensionmethod(Observable)
@@ -25,3 +25,4 @@ def observe_on(self, scheduler):
         return source.subscribe(ObserveOnObserver(scheduler, observer))
 
     return AnonymousObservable(subscribe)
+

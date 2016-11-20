@@ -1,7 +1,6 @@
 from .activeplan import ActivePlan
 from .joinobserver import JoinObserver
 
-
 class Plan(object):
     def __init__(self, expression, selector):
         self.expression = expression
@@ -41,3 +40,4 @@ class Plan(object):
             return observer
 
         return entry
+

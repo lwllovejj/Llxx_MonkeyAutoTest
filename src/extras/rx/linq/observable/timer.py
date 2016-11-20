@@ -1,13 +1,29 @@
 import logging
 from datetime import datetime
 
-from rx.core import Observable, AnonymousObservable
-from rx.concurrency import timeout_scheduler
-from rx.disposables import MultipleAssignmentDisposable
-from rx.internal import extensionclassmethod
+from rx.observable import Observable
+from rx.anonymousobservable import AnonymousObservable
+from rx.concurrency import timeout_scheduler, Scheduler
+from rx.internal import extensionmethod, extensionclassmethod
+from rx.internal.utils import Timestamp, TimeInterval
 
 log = logging.getLogger("Rx")
 
+
+def observable_timer_timespan_and_period(cls, duetime, period, scheduler):
+    if duetime == period:
+        def subscribe(observer):
+            def action(count):
+                observer.on_next(count)
+                count += 1
+                return count
+
+            return scheduler.schedule_periodic(period, action, 0)
+        return AnonymousObservable(subscribe)
+
+    def deferred():
+        return cls.observable_timer_date_and_period(scheduler.now() + duetime, period, scheduler)
+    return Observable.defer(deferred)
 
 def observable_timer_date(duetime, scheduler):
     def subscribe(observer):
@@ -18,32 +34,29 @@ def observable_timer_date(duetime, scheduler):
         return scheduler.schedule_absolute(duetime, action)
     return AnonymousObservable(subscribe)
 
-
 def observable_timer_date_and_period(duetime, period, scheduler):
-    p = scheduler.normalize(period)
+    p = Scheduler.normalize(period)
 
     def subscribe(observer):
-        mad = MultipleAssignmentDisposable()
-        dt = [duetime]
         count = [0]
+        d = [duetime]
 
-        def action(scheduler, state):
+        def action(state):
             if p > 0:
-                now = scheduler.now
-                dt[0] = dt[0] + scheduler.to_timedelta(p)
-                if dt[0] <= now:
-                    dt[0] = now + scheduler.to_timedelta(p)
+                now = scheduler.now()
+                d[0] = d[0] + scheduler.to_timedelta(p)
+                if d[0] <= now:
+                    d[0] = now + p
 
             observer.on_next(count[0])
             count[0] += 1
-            mad.disposable = scheduler.schedule_absolute(dt[0], action)
-        mad.disposable = scheduler.schedule_absolute(dt[0], action)
-        return mad
+            state(d[0])
+
+        return scheduler.schedule_recursive_with_absolute(d[0], action)
     return AnonymousObservable(subscribe)
 
-
 def observable_timer_timespan(duetime, scheduler):
-    d = scheduler.normalize(duetime)
+    d = Scheduler.normalize(duetime)
 
     def subscribe(observer):
         def action(scheduler, state):
@@ -52,7 +65,6 @@ def observable_timer_timespan(duetime, scheduler):
 
         return scheduler.schedule_relative(d, action)
     return AnonymousObservable(subscribe)
-
 
 def observable_timer_timespan_and_period(duetime, period, scheduler):
     if duetime == period:
@@ -65,10 +77,8 @@ def observable_timer_timespan_and_period(duetime, period, scheduler):
         return AnonymousObservable(subscribe)
 
     def defer():
-        dt = scheduler.now + scheduler.to_timedelta(duetime)
-        return observable_timer_date_and_period(dt, period, scheduler)
+        return observable_timer_date_and_period(scheduler.now() + scheduler.to_timedelta(duetime), period, scheduler)
     return Observable.defer(defer)
-
 
 @extensionclassmethod(Observable)
 def timer(cls, duetime, period=None, scheduler=None):

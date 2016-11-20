@@ -1,31 +1,33 @@
-from rx import config
-from rx.core import Observer, ObservableBase, Disposable
+from rx import Lock
+from rx.observable import Observable
 from rx.internal import DisposedException
+from rx.disposables import Disposable
+from rx.abstractobserver import AbstractObserver
 
 from .anonymoussubject import AnonymousSubject
 from .innersubscription import InnerSubscription
 
 
-class Subject(ObservableBase, Observer):
+class Subject(Observable, AbstractObserver):
     """Represents an object that is both an observable sequence as well as an
     observer. Each notification is broadcasted to all subscribed observers.
     """
 
     def __init__(self):
-        super(Subject, self).__init__()
+        super(Subject, self).__init__(self._subscribe)
 
         self.is_disposed = False
         self.is_stopped = False
         self.observers = []
         self.exception = None
 
-        self.lock = config["concurrency"].RLock()
+        self.lock = Lock()
 
     def check_disposed(self):
         if self.is_disposed:
             raise DisposedException()
 
-    def _subscribe_core(self, observer):
+    def _subscribe(self, observer):
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:

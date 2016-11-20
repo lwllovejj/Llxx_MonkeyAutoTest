@@ -1,8 +1,9 @@
-from rx.core import Observable, AnonymousObservable, Disposable
-from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
-from rx.concurrency import current_thread_scheduler
+from rx import AnonymousObservable
+from rx.disposables import Disposable, SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
+from rx.concurrency import immediate_scheduler
+from rx.observable import Observable
 from rx.internal import extensionmethod, extensionclassmethod
-from rx.internal import Enumerable
+from rx.internal import Enumerable, Enumerator
 
 
 @extensionmethod(Observable, instancemethod=True)
@@ -16,6 +17,7 @@ def concat(self, *args):
     Returns an observable sequence that contains the elements of each given
     sequence, in sequential order.
     """
+
     if isinstance(args[0], list):
         items = args[0]
     else:
@@ -23,7 +25,6 @@ def concat(self, *args):
 
     items.insert(0, self)
     return Observable.concat(items)
-
 
 @extensionmethod(Observable)
 def __add__(self, other):
@@ -34,7 +35,6 @@ def __add__(self, other):
     Returns self.concat(other)"""
 
     return self.concat(other)
-
 
 @extensionmethod(Observable)
 def __iadd__(self, other):
@@ -47,7 +47,6 @@ def __iadd__(self, other):
 
     return self.concat(self, other)
 
-
 @extensionclassmethod(Observable)
 def concat(cls, *args):
     """Concatenates all the observable sequences.
@@ -58,7 +57,6 @@ def concat(cls, *args):
     Returns an observable sequence that contains the elements of each given
     sequence, in sequential order.
     """
-    scheduler = current_thread_scheduler
 
     if isinstance(args[0], list) or isinstance(args[0], Enumerable):
         sources = args[0]
@@ -66,18 +64,13 @@ def concat(cls, *args):
         sources = list(args)
 
     def subscribe(observer):
-        subscription = SerialDisposable()
-        cancelable = SerialDisposable()
         enum = iter(sources)
-        is_disposed = []
+        is_disposed = [False]
+        subscription = SerialDisposable()
 
         def action(action1, state=None):
-            if is_disposed:
+            if is_disposed[0]:
                 return
-
-            def on_completed():
-                cancelable.disposable = scheduler.schedule(action)
-
             try:
                 current = next(enum)
             except StopIteration:
@@ -87,15 +80,18 @@ def concat(cls, *args):
             else:
                 d = SingleAssignmentDisposable()
                 subscription.disposable = d
-                d.disposable = current.subscribe(observer.on_next, observer.on_error, on_completed)
+                d.disposable = current.subscribe(
+                    observer.on_next,
+                    observer.on_error,
+                    lambda: action1()
+                )
 
-        cancelable.disposable = scheduler.schedule(action)
+        cancelable = immediate_scheduler.schedule_recursive(action)
 
         def dispose():
-            is_disposed.append(True)
-        return CompositeDisposable(subscription, cancelable, Disposable.create(dispose))
+            is_disposed[0] = True
+        return CompositeDisposable(subscription, cancelable, Disposable(dispose))
     return AnonymousObservable(subscribe)
-
 
 @extensionmethod(Observable)
 def concat_all(self):

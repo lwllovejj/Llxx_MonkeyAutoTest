@@ -1,4 +1,4 @@
-from rx.core import Observable
+from rx.observable import Observable
 from rx.concurrency import timeout_scheduler
 from rx.subjects import AsyncSubject
 from rx.internal import extensionclassmethod

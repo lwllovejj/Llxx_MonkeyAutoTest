@@ -1,7 +1,8 @@
 import logging
 
-from rx.core import Observable, Disposable
+from rx import Observable
 from rx.concurrency import VirtualTimeScheduler
+from rx.disposables import Disposable
 
 from .coldobservable import ColdObservable
 from .hotobservable import HotObservable
@@ -21,7 +22,7 @@ class TestScheduler(VirtualTimeScheduler):
 
         def comparer(a, b):
             return a - b
-        super(TestScheduler, self).__init__(0)
+        super(TestScheduler, self).__init__(0, comparer)
 
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at the specified virtual time.

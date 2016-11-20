@@ -1,14 +1,16 @@
-from rx import config
-from rx.core import Observer, ObservableBase, Disposable
+from rx import Lock
+from rx.observable import Observable
 from rx.internal import DisposedException
+from rx.disposables import Disposable
+from rx.abstractobserver import AbstractObserver
 
 from .innersubscription import InnerSubscription
 
 
-class BehaviorSubject(ObservableBase, Observer):
-    """Represents a value that changes over time. Observers can
-    subscribe to the subject to receive the last (or initial) value and
-    all subsequent notifications.
+class BehaviorSubject(Observable, AbstractObserver):
+    """Represents a value that changes over time. Observers can subscribe to
+    the subject to receive the last (or initial) value and all subsequent
+    notifications.
     """
 
     def __init__(self, value):
@@ -17,11 +19,11 @@ class BehaviorSubject(ObservableBase, Observer):
         specified value.
 
         Keyword parameters:
-        :param T value: Initial value sent to observers when no other
-            value has been received by the subject yet.
+        :param T value: Initial value sent to observers when no other value has
+            been received by the subject yet.
         """
 
-        super(BehaviorSubject, self).__init__()
+        super(BehaviorSubject, self).__init__(self.__subscribe)
 
         self.value = value
         self.observers = []
@@ -29,13 +31,13 @@ class BehaviorSubject(ObservableBase, Observer):
         self.is_stopped = False
         self.exception = None
 
-        self.lock = config["concurrency"].RLock()
+        self.lock = Lock()
 
     def check_disposed(self):
         if self.is_disposed:
             raise DisposedException()
 
-    def _subscribe_core(self, observer):
+    def __subscribe(self, observer):
         ex = None
 
         with self.lock:
@@ -68,8 +70,10 @@ class BehaviorSubject(ObservableBase, Observer):
             for o in os:
                 o.on_completed()
 
+
     def on_error(self, error):
-        """Notifie all subscribed observers with the exception."""
+        """Notifies all subscribed observers with the exception."""
+
         os = None
         with self.lock:
             self.check_disposed()
@@ -84,7 +88,8 @@ class BehaviorSubject(ObservableBase, Observer):
                 o.on_error(error)
 
     def on_next(self, value):
-        """Notifie all subscribed observers with the value."""
+        """Notifies all subscribed observers with the value."""
+
         os = None
         with self.lock:
             self.check_disposed()
@@ -96,13 +101,14 @@ class BehaviorSubject(ObservableBase, Observer):
                 o.on_next(value)
 
     def dispose(self):
-        """Release all resources.
+        """Releases all resources used by the current instance of the
+        ReplaySubject class and unsubscribe all observers."""
 
-        Releases all resources used by the current instance of the
-        ReplaySubject class and unsubscribe all observers.
-        """
         with self.lock:
             self.is_disposed = True
             self.observers = None
             self.value = None
             self.exception = None
+
+
+

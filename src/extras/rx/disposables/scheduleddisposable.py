@@ -1,5 +1,4 @@
-from rx import config
-from rx.core import Disposable
+from .disposable import Disposable
 
 
 class ScheduledDisposable(Disposable):
@@ -12,9 +11,6 @@ class ScheduledDisposable(Disposable):
 
         self.scheduler = scheduler
         self.disposable = disposable
-        self.is_disposed = False
-        self.lock = config["concurrency"].RLock()
-
         super(ScheduledDisposable, self).__init__()
 
     def dispose(self):
