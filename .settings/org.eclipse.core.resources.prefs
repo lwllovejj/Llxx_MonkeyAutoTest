@@ -30,6 +30,7 @@ encoding//src/demos/llxx_z_waitmessage.py=utf-8
 encoding//src/dump/dumpsnap.py=utf-8
 encoding//src/dump/jsonformat.py=utf-8
 encoding//src/dump/xmltoJson.py=utf-8
+encoding//src/extras/aircv/__init__.py=utf-8
 encoding//src/extras/jinja2/_compat.py=utf-8
 encoding//src/extras/jinja2/bccache.py=utf-8
 encoding//src/extras/jinja2/environment.py=utf-8

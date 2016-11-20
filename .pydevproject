@@ -4,8 +4,6 @@
 <path>/${PROJECT_DIR_NAME}</path>
 <path>/${PROJECT_DIR_NAME}/src/llxx_client</path>
 <path>/${PROJECT_DIR_NAME}/src/llxx_app</path>
-<path>/${PROJECT_DIR_NAME}/src/extents</path>
-<path>/${PROJECT_DIR_NAME}/src/websocket</path>
 <path>/${PROJECT_DIR_NAME}/src/llxx_monitor</path>
 <path>/${PROJECT_DIR_NAME}/src/llxx_utils</path>
 <path>/${PROJECT_DIR_NAME}/src/report</path>
