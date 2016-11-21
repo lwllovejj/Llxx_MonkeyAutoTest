@@ -23,30 +23,13 @@ class llxx_client_listner:
 
 
 class llxx_client:
-    def __init__(self, listenerApkService , listenerMonkeyRunnerService):
+    def __init__(self, listenerApkService):
         
         self.DEBUG = False
         # 监听客户端的点击事件
         
-        self.uiautomator_client = socket.socket()
-        self.uiautomator_client.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
-        self.uiautomator_client.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 30 * 1024 * 2)
-        self.uiautomator_client.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 30 * 1024 * 2)
-        
-        # 处理monkeyrunner的点击事件
-        self.socket_monkeyrunner = socket.socket()
-        self.socket_monkeyrunner.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
-        self.socket_monkeyrunner.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 30 * 1024 * 2)
-        self.socket_monkeyrunner.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 30 * 1024 * 2)
-        
         self.listener_apk_service = listenerApkService
-        
-        self.listener_monkeyrunner_service = listenerMonkeyRunnerService
-        
         self.socket_service_close = False
-        self.socket_monkeyrunner_close = False
-        self.socket_uiautomator_close = False
-        
         self._debug_data_recv = False
         
     def _setuiautomator_listtener(self, uiautomator_listtener):
@@ -68,42 +51,6 @@ class llxx_client:
                     print "Error: socket_listener service is closed"
                     break;
                 
-    def _monkeyrunner(self):
-        print "_monkeyrunner start"
-        dataAll = ""
-        while(True):
-            try:
-                data = self.socket_monkeyrunner.recv(1024)  # 阻塞线程，接受消息
-                # print "_listener receive->" + data
-                dataAll = dataAll + data
-                if(data.__sizeof__() != 1057):
-                    # print "_listener receive->" + data
-                    self.listener_monkeyrunner_service(dataAll)
-                    dataAll = ""
-            except Exception, e:
-                if str(e).strip() == "[Errno 10053]":
-                    self.socket_monkeyrunner_close = True
-                    print "Error: uiautomator service is closed"
-                    break;
-                
-    def _uiautomator(self):
-        print "_uiautomator start"
-        dataAll = ""
-        while(True):
-            try:
-                data = self.uiautomator_client.recv(1024)  # 阻塞线程，接受消息
-                # print "_listener receive->" + data
-                dataAll = dataAll + data
-                if(data.__sizeof__() != 1057):
-                    # print "_listener receive->" + data
-                    if self.uiautomator_listtener != None and dataAll != '':
-                        self.uiautomator_listtener(dataAll)
-                        dataAll = ""  
-            except Exception, e:
-                if str(e).strip() == "[Errno 10053]":
-                    self.socket_uiautomator_close = True
-                    print "Error: uiautomator service is closed"
-                    break;
     '''
     send message to Android Apk Service
     '''
@@ -117,21 +64,6 @@ class llxx_client:
             return False
         return True
         
-    '''
-    send message to MonkeyRunner Service
-    '''
-    def sendToMonkeyRunner(self, msg):
-        try:
-            self.socket_monkeyrunner.send(msg);
-        except:
-            print "monkeyrunner service is not start, please run : StartMonkeyService.py"
-            if self.DEBUG:
-                print msg
-            return False
-        return True
-    
-    def sendToUiAnimator(self, msg):
-        self.uiautomator_client.send(msg + "}")
     
     def _start(self):
         try:
@@ -144,25 +76,3 @@ class llxx_client:
         except:
             #print "can`t connect 127.0.0.1:8082"
             self.socket_service_close = True
-            
-        try:
-            # 调用connect 连接本地(127.0.0.1) 的8082端口
-            self.uiautomator_client.connect(("127.0.0.1", 8083))
-            # 开始连接
-            t = threading.Thread(target=self._uiautomator, args=())
-            t.setDaemon(True)
-            t.start()
-        except:
-            #print "can`t connect 127.0.0.1:8083"
-            self.socket_uiautomator_close = True
-            
-        try:
-            # 调用connect 连接本地(127.0.0.1) 的9999端口
-            self.socket_monkeyrunner.connect(("127.0.0.1", 9999))
-            # 开始连接
-            t = threading.Thread(target=self._monkeyrunner, args=())
-            t.setDaemon(True)
-            t.start()
-        except:
-            #print "can`t connect 127.0.0.1:9999"
-            self.socket_monkeyrunner_close = True
