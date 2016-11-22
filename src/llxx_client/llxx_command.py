@@ -26,13 +26,16 @@ PHONE_WORKSPACE = "/sdcard/llxx/";
 
 class command:
     
+    __generateid = 1
     def __init__(self):
         self._command = {
-            'action': self.getAction()
+            'action': self.getAction(),
+            'id' : str(command.__generateid)
         }
         self._params = {
         
         }
+        command.__generateid += 1
         
     '''
     @note: 获取当前和服务端连接的客户端
