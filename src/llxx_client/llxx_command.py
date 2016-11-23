@@ -512,7 +512,7 @@ class UiSelectQuery(UiSelect):
 
     
     def getAction(self):
-        return "queryAccessibility"
+        return "uiSecletAction"
     
     '''
     @note: 根据选择器查询，或执行操作
