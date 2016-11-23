@@ -135,6 +135,12 @@ class command:
         return self._command['describe']
     
     '''
+    @note: 
+    '''
+    def getRequestId(self):
+        return self._command['id']
+    
+    '''
     @note: 退出当前的测试用例
     '''
     def ownExit(self):
@@ -269,10 +275,11 @@ class Query(command):
     
     def priviteWaitParams(self):
         self.client_wrap.runCommand(self)
-        result = llxx_wait(self.client_wrap).waitForParams(self._command, 10)
+        result = llxx_wait(self.client_wrap).waitForId(self.getRequestId(), 10)
         if result != None and result['sucess']:
             return result['params']
         return None
+    
     '''
     @note: 获取当前正在运行的Acitivity
     '''
@@ -291,7 +298,7 @@ class Query(command):
     @return: result['width':width, 'height':height]
     '''
     def getScreenSize(self):
-        self._command['type'] = 'screensize'
+        self._params['type'] = 'screensize'
         result = self.priviteWaitParams()
         
         if result != None:
@@ -302,8 +309,8 @@ class Query(command):
     @return: {'activitys': [{'name': 'xxx.xxx.xxx.Activity1'}, {'name': 'xxx.xxx.xxx.Activity2'}]}
     '''
     def getAllActivity(self, package):
-        self._command['type'] = 'allactivity'
-        self._params['package'] = package
+        self._params['type'] = 'allactivity'
+        self._params['packagename'] = package
         result = self.priviteWaitParams()
         
         if result != None:
@@ -314,8 +321,8 @@ class Query(command):
     @note: 获取当前测试APK的所有服务
     '''
     def getAllService(self, package):
-        self._command['type'] = 'allservice'
-        self._params['package'] = package
+        self._params['type'] = 'allservice'
+        self._params['packagename'] = package
         result = self.priviteWaitParams()
         
         if result != None:
@@ -326,7 +333,7 @@ class Query(command):
     @note: 获取所有的所有安装的app的信息，调用该方法会在 /sdcard/llxx/文件夹下生成所有的icon信息
     '''    
     def getAllAppInfo(self):
-        self._command['type'] = 'allappinfo'
+        self._params['type'] = 'allappinfo'
         self._params['dir'] = '/sdcard/llxx/'
         result = self.priviteWaitParams()
         

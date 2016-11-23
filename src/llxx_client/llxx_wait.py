@@ -17,7 +17,7 @@ class MonitorMessage():
     def __init__(self):
         self._llxx_client_wrap = llxx_app.llxx_app._llxx_client_wrap
     
-    ## 准备事件监听
+    # # 准备事件监听
     def prepare(self):
         self._llxx_client_wrap.regMessageListner(self)
         return self
@@ -31,7 +31,7 @@ class MonitorMessage():
     @param maps: 对应数据字典
     @param timeout: 超时时间
     '''
-    def waitForTextClick(self, text ,timeout):
+    def waitForTextClick(self, text , timeout):
         
         isMatch = False
         timetotal = 0.0
@@ -57,8 +57,9 @@ class MonitorMessage():
 
 class llxx_wait:
     
-    messageList = [] 
+    
     def __init__(self, llxx_client_wrap):
+        self.messageList = [] 
         self._llxx_client_wrap = llxx_client_wrap
     
     def onMessage(self, message):
@@ -103,7 +104,36 @@ class llxx_wait:
             time.sleep(0.1)
         self._llxx_client_wrap.unRegMessageListener(self)
         return message
-    
+            # # 等待指定的数据
+    '''
+    @param maps: 对应数据字典
+    @param timeout: 超时时间
+    '''
+    def waitForId(self, request_id , timeout):
+        self._llxx_client_wrap.regMessageListner(self)
+        isMatch = False
+        timetotal = 0.0
+        message = None
+        while True and (isMatch == False and timetotal < timeout):
+            for msg in self.messageList:
+                try:
+                    target = json.JSONDecoder().decode(msg)
+                    isMatch = False
+                    # 遍历数组中的元素
+                    if "id" in target.keys() and request_id == target["id"]:
+                        isMatch = True
+                            
+                    if isMatch:
+                        message = target
+                        self.messageList.remove(msg)
+                        break;
+                except:
+                    pass
+            # print 'time pass' + str(timetotal)
+            timetotal += 0.1
+            time.sleep(0.1)
+        self._llxx_client_wrap.unRegMessageListener(self)
+        return message
     # # 等待指定的数据
     '''
     @param maps: 对应数据字典
