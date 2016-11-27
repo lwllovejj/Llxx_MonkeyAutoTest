@@ -10,6 +10,8 @@ from llxx_command import Query
 
 app = llxx_app("com.llxx.service")
 
+
+
 print Query().getScreenSize()
 print Query().getAllActivity("com.llxx.service")
 

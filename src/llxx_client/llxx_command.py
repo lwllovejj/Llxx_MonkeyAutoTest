@@ -234,8 +234,8 @@ class AmCommand(command):
     @note: 启动指定的APP
     '''
     def startApp(self, pacakge):
-        self._command['type'] = 'start_app'
-        self._command['packagename'] = pacakge
+        self._params['type'] = 'start_app'
+        self._params['packagename'] = pacakge
         self.appendDescribe("启动应用->" + pacakge)
         return self.priviteWaitParams(self.client_wrap)
 
