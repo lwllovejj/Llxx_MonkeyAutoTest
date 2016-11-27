@@ -12,6 +12,7 @@ from __builtin__ import str
 from PIL import Image
 import io
 from wx import BitmapFromImage
+import time_utils
 
 '''
 Format      C Type          Python                  字节数
@@ -93,14 +94,18 @@ def imgGetFromDevice(socket):
     
     buf.seek(0)
     len_read = 0
+    start = time_utils.getTime()
     while len_read < frame_size:
         data = socket.recv(4096)
         len_read += len(data)
 
         buf.write(data)
+        
+    print str(time_utils.getTime() - start)
     buf.seek(0)
-
+    start = time_utils.getTime()
     img = Image.open(buf)
+    print str(time_utils.getTime() - start)
     return img
         
 
